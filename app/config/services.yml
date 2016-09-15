@@ -1,9 +1,14 @@
-# Learn more about services, parameters and containers at
-# http://symfony.com/doc/current/book/service_container.html
-parameters:
-#    parameter_name: value
-
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    user.repository:
+        alias: user.in_file.repository
+
+    user.in_memory.repository:
+        class: MoodValue\Infrastructure\Repository\UserInMemoryRepository
+        public: false
+
+
+    user.in_file.repository:
+        class: MoodValue\Infrastructure\Repository\UserInFileRepository
+        public: false
+        arguments:
+            - %kernel.root_dir%
