@@ -52,19 +52,23 @@ class UserController extends Controller
     public function createUserAction(Request $request)
     {
         $body = json_decode($request->getContent(), true);
+        $userEmail = EmailAddress::fromString($body['email']);
+        $userEmailAlreadyExists = $this->get('user.repository')->emailExists($userEmail);
 
         $user = User::create(
             UserId::generate(),
-            EmailAddress::fromString($body['email']),
+            $userEmail,
             DeviceToken::fromString($body['device_token'])
         );
 
-        $this->get('user.repository')->add($user);
+        if (!$userEmailAlreadyExists) {
+            $this->get('user.repository')->add($user);
+        }
 
         return new JsonResponse([
             'id' => $user->getUserId()->toString(),
             'email' => $user->getEmailAddress()->toString()
-        ], Response::HTTP_CREATED);
+        ], $userEmailAlreadyExists ? Response::HTTP_OK : Response::HTTP_CREATED);
     }
 
     /**

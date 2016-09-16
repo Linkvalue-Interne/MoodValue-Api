@@ -1,14 +1,19 @@
 services:
     user.repository:
-        alias: user.in_file.repository
+        alias: user.mysql.repository
 
     user.in_memory.repository:
         class: MoodValue\Infrastructure\Repository\UserInMemoryRepository
         public: false
 
-
     user.in_file.repository:
         class: MoodValue\Infrastructure\Repository\UserInFileRepository
         public: false
         arguments:
-            - %kernel.root_dir%
+            - "%kernel.root_dir%"
+
+    user.mysql.repository:
+        class: MoodValue\Infrastructure\Repository\UserMysqlRepository
+        public: false
+        arguments:
+            - "@doctrine.dbal.default_connection"

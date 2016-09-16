@@ -2,6 +2,8 @@
 
 namespace MoodValue\Infrastructure\Repository;
 
+use MoodValue\Model\User\DeviceToken;
+use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
 use MoodValue\Model\User\UserRepository;
@@ -25,15 +27,17 @@ class UserInFileRepository implements UserRepository
         $this->putContent($users);
     }
 
-    public function get(UserId $userId)
+    public function get(UserId $userId) : User
     {
         $users = $this->getContent();
 
         if (isset($users[$userId->toString()])) {
-            return $users[$userId->toString()];
+            return User::create(
+                UserId::fromString($users[$userId->toString()][0]),
+                EmailAddress::fromString($users[$userId->toString()][1]),
+                DeviceToken::fromString($users[$userId->toString()][2])
+            );
         }
-
-        return;
     }
 
     private function getContent()

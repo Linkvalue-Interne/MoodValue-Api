@@ -18,7 +18,7 @@ class UserInMemoryRepository implements UserRepository
         $this->users[$user->getUserId()->toString()] = $user;
     }
 
-    public function get(UserId $userId)
+    public function get(UserId $userId) : User
     {
         return $this->users[$userId->toString()];
     }
