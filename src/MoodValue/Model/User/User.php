@@ -19,13 +19,23 @@ class User
      */
     private $deviceToken;
 
-    public static function create(UserId $userId, EmailAddress $emailAddress, DeviceToken $deviceToken) : User
+    /**
+     * @var \DateTimeInterface
+     */
+    private $createdAt;
+
+    public static function create(
+        UserId $userId,
+        EmailAddress $emailAddress,
+        DeviceToken $deviceToken
+    ) : User
     {
         $user = new self();
 
         $user->userId = $userId;
         $user->emailAddress = $emailAddress;
         $user->deviceToken = $deviceToken;
+        $user->createdAt = new \DateTimeImmutable('now');
 
         return $user;
     }
@@ -52,5 +62,13 @@ class User
     public function getDeviceToken()
     {
         return $this->deviceToken;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }
