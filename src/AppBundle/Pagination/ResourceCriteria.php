@@ -47,8 +47,8 @@ class ResourceCriteria
      */
     public function __construct(array $criteria)
     {
-        $page = $criteria[self::PAGE_PARAMETER_NAME] ? intval($criteria[self::PAGE_PARAMETER_NAME]) : 1;
-        $perPage = $criteria[self::LIMIT_PARAMETER_NAME] ? intval($criteria[self::LIMIT_PARAMETER_NAME]) : 10;
+        $page = isset($criteria[self::PAGE_PARAMETER_NAME]) ? intval($criteria[self::PAGE_PARAMETER_NAME]) : 1;
+        $perPage = isset($criteria[self::LIMIT_PARAMETER_NAME]) ? intval($criteria[self::LIMIT_PARAMETER_NAME]) : 10;
         $sort = $criteria[self::SORT_PARAMETER_NAME] ?? '';
 
         $this->fieldsCriteria = array_diff_key(

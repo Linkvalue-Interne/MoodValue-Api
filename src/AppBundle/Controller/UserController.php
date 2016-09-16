@@ -30,21 +30,18 @@ class UserController extends Controller
         $resourceCriteria = new ResourceCriteria($request->query->all());
 
         $usersCollectionResult = $this->get('user.repository')->findAll(
-            $resourceCriteria->getStart(),
-            $resourceCriteria->getLimit()
+            $resourceCriteria->getStart(), $resourceCriteria->getLimit()
         );
-
-        $users = $usersCollectionResult->getResults();
 
         $pageResults = [];
 
-        array_walk($users, function ($user) use (&$pageResults) {
+        foreach ($usersCollectionResult->getResults() as $user) {
             $pageResults[] = [
                 'id' => $user['id'],
                 'email' => $user['email'],
                 'device_tokens' => explode(',', $user['device_tokens'])
             ];
-        });
+        }
 
         $paginatedRepresentation = new PaginatedRepresentation($resourceCriteria, $usersCollectionResult->getTotal(), $pageResults);
 
