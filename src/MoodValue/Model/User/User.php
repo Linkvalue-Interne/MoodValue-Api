@@ -24,6 +24,8 @@ class User
      */
     private $createdAt;
 
+    private function __construct() {}
+
     public static function create(
         UserId $userId,
         EmailAddress $emailAddress,
@@ -31,7 +33,6 @@ class User
     ) : User
     {
         $user = new self();
-
         $user->userId = $userId;
         $user->emailAddress = $emailAddress;
         $user->deviceToken = $deviceToken;

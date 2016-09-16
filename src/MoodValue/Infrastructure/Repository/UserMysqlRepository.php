@@ -83,11 +83,13 @@ class UserMysqlRepository implements UserRepository
         }
 
         $userDeviceTokens = explode(',', $user['device_tokens']);
+
         if (in_array($deviceToken->toString(), $userDeviceTokens)) {
             return 0;
         }
 
         $userDeviceTokens[] = $deviceToken->toString();
+
         return $this->connection->update(
             self::TABLE_USER,
             [

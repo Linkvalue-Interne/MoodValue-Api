@@ -39,7 +39,8 @@ class UserController extends Controller
             $pageResults[] = [
                 'id' => $user['id'],
                 'email' => $user['email'],
-                'device_tokens' => explode(',', $user['device_tokens'])
+                'device_tokens' => explode(',', $user['device_tokens']),
+                'created_at' => (new \DateTimeImmutable($user['created_at']))->format(\DateTime::ISO8601)
             ];
         }
 
