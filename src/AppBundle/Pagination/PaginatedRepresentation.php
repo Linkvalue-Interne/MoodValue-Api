@@ -11,15 +11,14 @@ class PaginatedRepresentation
     private $results;
 
     public function __construct(
-        int $page,
+        ResourceCriteria $resourceCriteria,
         int $total,
-        int $limit,
         array $results
     ) {
-        $this->page = $page;
-        $this->pages = ceil($total / $limit);
+        $this->page = $resourceCriteria->getPage();
+        $this->pages = ceil($total / $resourceCriteria->getLimit());
         $this->total = $total;
-        $this->limit = $limit;
+        $this->limit = $resourceCriteria->getLimit();
         $this->results = $results;
     }
 

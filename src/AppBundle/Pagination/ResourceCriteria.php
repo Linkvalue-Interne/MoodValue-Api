@@ -35,11 +35,6 @@ class ResourceCriteria
     /**
      * @var array
      */
-    private $criteria;
-
-    /**
-     * @var array
-     */
     private $fieldsCriteria;
 
     /**
@@ -49,43 +44,15 @@ class ResourceCriteria
 
     /**
      * @param array $criteria
-     *
-     * @throws \InvalidArgumentException
      */
     public function __construct(array $criteria)
     {
-        $this->criteria = $criteria;
+        $page = $criteria[self::PAGE_PARAMETER_NAME] ? intval($criteria[self::PAGE_PARAMETER_NAME]) : 1;
+        $perPage = $criteria[self::LIMIT_PARAMETER_NAME] ? intval($criteria[self::LIMIT_PARAMETER_NAME]) : 10;
+        $sort = $criteria[self::SORT_PARAMETER_NAME] ?? '';
 
-        $this->criteria[self::PAGE_PARAMETER_NAME] = $this->criteria[self::PAGE_PARAMETER_NAME] ?? 1;
-        $this->criteria[self::LIMIT_PARAMETER_NAME] = $this->criteria[self::LIMIT_PARAMETER_NAME] ?? 10;
-        $this->criteria[self::SORT_PARAMETER_NAME] = $this->criteria[self::SORT_PARAMETER_NAME] ?? '';
-//        if (isset($this->criteria[self::PAGE_PARAMETER_NAME]) && !is_int($this->criteria[self::PAGE_PARAMETER_NAME])) {
-//            throw new \InvalidArgumentException('Invalid page number');
-//        }
-//
-//        if (isset($this->criteria[self::LIMIT_PARAMETER_NAME]) && !is_int($this->criteria[self::LIMIT_PARAMETER_NAME])) {
-//            throw new \InvalidArgumentException('Invalid limit');
-//        }
-//
-//        if (isset($this->criteria[self::SORT_PARAMETER_NAME]) && !is_array($this->criteria[self::SORT_PARAMETER_NAME])) {
-//            throw new \InvalidArgumentException('Invalid sort criteria');
-//        }
-
-        $this->splitCriteria();
-        $this->calculateStartAndLimitFromCriteria();
-    }
-
-    /**
-     * Filter all get params by removing the ones used for pagination
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return ResourceCriteria
-     */
-    private function splitCriteria()
-    {
         $this->fieldsCriteria = array_diff_key(
-            $this->criteria,
+            $criteria,
             array(
                 self::PAGE_PARAMETER_NAME  => null,
                 self::LIMIT_PARAMETER_NAME => null,
@@ -93,41 +60,11 @@ class ResourceCriteria
             )
         );
 
-        $this->sortCriteria = explode(',', $this->criteria[self::SORT_PARAMETER_NAME]);
+        $this->sortCriteria = $sort ? explode(',', $sort) : [];
 
-        return $this;
-    }
-
-    /**
-     * Get start and limit from page and perPage
-     *
-     * @param int $page    Page number
-     * @param int $perPage Results per page
-     *
-     * @return ResourceCriteria
-     */
-    private function calculateStartAndLimit($page, $perPage = 10)
-    {
         $this->page = max($page, 1);
         $this->limit = max(min($perPage, $this->maxLimit), 1);
         $this->start = ($this->page - 1) * $this->limit;
-
-        return $this;
-    }
-
-    /**
-     * Calculate start and limit from criteria
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return ResourceCriteria
-     */
-    private function calculateStartAndLimitFromCriteria()
-    {
-        return $this->calculateStartAndLimit(
-            $this->criteria[self::PAGE_PARAMETER_NAME],
-            $this->criteria[self::LIMIT_PARAMETER_NAME]
-        );
     }
 
     /**
@@ -189,13 +126,5 @@ class ResourceCriteria
     public function getPage()
     {
         return $this->page;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
     }
 }

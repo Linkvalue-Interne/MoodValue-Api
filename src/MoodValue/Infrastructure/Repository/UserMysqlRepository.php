@@ -63,8 +63,14 @@ class UserMysqlRepository implements UserRepository
         return $stmt->fetchColumn() >= 1;
     }
 
-    public function findAll() : array
+    public function findAll(int $start = 0, int $limit = 10) : CollectionResult
     {
-        return $this->connection->fetchAll(sprintf('SELECT * FROM %s', self::TABLE_USER));
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT SQL_CALC_FOUND_ROWS * FROM %s LIMIT %d, %d', self::TABLE_USER, $start, $limit)
+        );
+
+        $total = $this->connection->fetchColumn('SELECT FOUND_ROWS()');
+
+        return new CollectionResult($results, $total);
     }
 }

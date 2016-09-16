@@ -27,7 +27,14 @@ class UserController extends Controller
      */
     public function getUsersAction(Request $request)
     {
-        $users = $this->get('user.repository')->findAll();
+        $resourceCriteria = new ResourceCriteria($request->query->all());
+
+        $usersCollectionResult = $this->get('user.repository')->findAll(
+            $resourceCriteria->getStart(),
+            $resourceCriteria->getLimit()
+        );
+
+        $users = $usersCollectionResult->getResults();
 
         $pageResults = [];
 
@@ -39,7 +46,7 @@ class UserController extends Controller
             ];
         });
 
-        $paginatedRepresentation = new PaginatedRepresentation(1, 100, 10, $pageResults);
+        $paginatedRepresentation = new PaginatedRepresentation($resourceCriteria, $usersCollectionResult->getTotal(), $pageResults);
 
         return new JsonResponse($paginatedRepresentation->toArray());
     }
