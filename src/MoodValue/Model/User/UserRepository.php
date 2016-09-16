@@ -6,5 +6,5 @@ interface UserRepository
 {
     public function add(User $user);
 
-    public function get(UserId $userId) : User;
+    public function get(UserId $userId);
 }

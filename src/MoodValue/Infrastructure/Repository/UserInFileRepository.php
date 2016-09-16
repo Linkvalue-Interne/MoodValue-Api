@@ -27,7 +27,7 @@ class UserInFileRepository implements UserRepository
         $this->putContent($users);
     }
 
-    public function get(UserId $userId) : User
+    public function get(UserId $userId)
     {
         $users = $this->getContent();
 

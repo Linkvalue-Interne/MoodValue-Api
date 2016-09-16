@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Pagination\PaginatedRepresentation;
+use AppBundle\Pagination\ResourceCriteria;
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\User;
@@ -25,24 +27,21 @@ class UserController extends Controller
      */
     public function getUsersAction(Request $request)
     {
-        return new JsonResponse([
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'email' => 'test1@example.com',
-                'device_tokens' => [
-                    Uuid::uuid4()->toString(),
-                    Uuid::uuid4()->toString()
-                ]
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'email' => 'test2@example.com',
-                'device_tokens' => [
-                    Uuid::uuid4()->toString(),
-                    Uuid::uuid4()->toString()
-                ]
-            ]
-        ]);
+        $users = $this->get('user.repository')->findAll();
+
+        $pageResults = [];
+
+        array_walk($users, function ($user) use (&$pageResults) {
+            $pageResults[] = [
+                'id' => $user['id'],
+                'email' => $user['email'],
+                'device_tokens' => explode(',', $user['device_tokens'])
+            ];
+        });
+
+        $paginatedRepresentation = new PaginatedRepresentation(1, 100, 10, $pageResults);
+
+        return new JsonResponse($paginatedRepresentation->toArray());
     }
 
     /**
@@ -78,6 +77,8 @@ class UserController extends Controller
     public function deleteUserAction(Request $request, $userId)
     {
         $userId = UserId::fromString($userId);
+
+        // @TODO
 
         return new JsonResponse([
             'message' => sprintf('User with user id %s has been deleted', $userId->toString())

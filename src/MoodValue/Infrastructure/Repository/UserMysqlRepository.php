@@ -36,7 +36,7 @@ class UserMysqlRepository implements UserRepository
         ]);
     }
 
-    public function get(UserId $userId) : User
+    public function get(UserId $userId)
     {
         $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s where id = :user_id', self::TABLE_USER));
         $stmt->bindValue('user_id', $userId);
