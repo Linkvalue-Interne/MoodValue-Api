@@ -3,8 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
 
-# Put parameters here that don't need to change on each machine where the app is deployed
-# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
 
@@ -27,17 +25,15 @@ framework:
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id:  session.handler.native_file
-        save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+        save_path:   "%session_native_save_path%"
     fragments:       ~
     http_method_override: true
     assets: ~
 
-# Twig Configuration
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
-# Doctrine Configuration
 doctrine:
     dbal:
         driver:   pdo_mysql
@@ -59,7 +55,6 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
-# Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
     host:      "%mailer_host%"
@@ -67,9 +62,16 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
-# Doctrine migrations
 doctrine_migrations:
     dir_name: "%kernel.root_dir%/DoctrineMigrations"
     namespace: Application\Migrations
     table_name: migration_versions
     name: Application Migrations
+
+link_value_mobile_notif:
+    clients:
+        gcm:
+            moodvalue_android:
+                params:
+                    api_access_key: '%pushnot_android_key%'
+                    endpoint: '%pushnot_android_endpoint%'

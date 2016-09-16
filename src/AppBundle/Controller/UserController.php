@@ -56,7 +56,8 @@ class UserController extends Controller
     {
         $body = json_decode($request->getContent(), true);
         $userEmail = EmailAddress::fromString($body['email']);
-        $userEmailAlreadyExists = $this->get('user.repository')->emailExists($userEmail);
+        $userRepository = $this->get('user.repository');
+        $userEmailAlreadyExists = $userRepository->emailExists($userEmail);
 
         $user = User::create(
             UserId::generate(),
@@ -65,7 +66,10 @@ class UserController extends Controller
         );
 
         if (!$userEmailAlreadyExists) {
-            $this->get('user.repository')->add($user);
+            $userRepository->add($user);
+        } else {
+            // Add deviceToken to user if it's a new one
+            $userRepository->addDeviceToken($user->getUserId(), $user->getDeviceToken());
         }
 
         return new JsonResponse([

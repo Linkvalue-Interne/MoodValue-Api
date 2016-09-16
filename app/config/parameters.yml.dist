@@ -17,3 +17,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # framework
+    session_native_save_path: '%kernel.root_dir%/../var/sessions/%kernel.environment%'
+
+    # pushnot configuration
+    pushnot_android_endpoint: 'https://fcm.googleapis.com/fcm/send'
+    pushnot_android_key: 'PUT_YOUR_ANDROID_API_ACCESS_KEY_HERE'

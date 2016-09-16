@@ -3,6 +3,7 @@
 namespace MoodValue\Infrastructure\Repository;
 
 use Doctrine\DBAL\Connection;
+use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
@@ -39,7 +40,7 @@ class UserMysqlRepository implements UserRepository
     public function get(UserId $userId)
     {
         $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s where id = :user_id', self::TABLE_USER));
-        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('user_id', $userId->toString());
         $stmt->execute();
 
         return $stmt->fetch();
@@ -72,5 +73,28 @@ class UserMysqlRepository implements UserRepository
         $total = $this->connection->fetchColumn('SELECT FOUND_ROWS()');
 
         return new CollectionResult($results, $total);
+    }
+
+    public function addDeviceToken(UserId $userId, DeviceToken $deviceToken) : int
+    {
+        if (!$user = $this->get($userId)) {
+            return 0;
+        }
+
+        $userDeviceTokens = explode(',', $user['device_tokens']);
+        if (in_array($deviceToken->toString(), $userDeviceTokens)) {
+            return 0;
+        }
+
+        $userDeviceTokens[] = $deviceToken->toString();
+        return $this->connection->update(
+            self::TABLE_USER,
+            [
+                'device_tokens' => implode(',', $userDeviceTokens)
+            ],
+            [
+                'id' => $userId->toString()
+            ]
+        );
     }
 }

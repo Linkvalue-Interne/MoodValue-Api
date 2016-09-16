@@ -37,6 +37,14 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
             if ($userRepository->add($user)) {
                 $nbCreatedUsers++;
             }
+
+            // Add some device tokens
+            if ($i % 2) {
+                $userRepository->addDeviceToken(
+                    $user->getUserId(),
+                    DeviceToken::fromString(Uuid::uuid4()->toString())
+                );
+            }
         }
 
         $output->writeln(sprintf('%d users have been created!', $nbCreatedUsers));
