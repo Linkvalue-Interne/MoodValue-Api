@@ -17,3 +17,12 @@ services:
         public: false
         arguments:
             - "@doctrine.dbal.default_connection"
+
+    event.repository:
+        alias: event.mysql.repository
+
+    event.mysql.repository:
+        class: MoodValue\Infrastructure\Repository\EventMysqlRepository
+        public: false
+        arguments:
+            - "@doctrine.dbal.default_connection"

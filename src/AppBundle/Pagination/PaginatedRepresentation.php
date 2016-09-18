@@ -16,7 +16,7 @@ class PaginatedRepresentation
         array $results
     ) {
         $this->page = $resourceCriteria->getPage();
-        $this->pages = ceil($total / $resourceCriteria->getLimit());
+        $this->pages = max(ceil($total / $resourceCriteria->getLimit()), 1);
         $this->total = $total;
         $this->limit = $resourceCriteria->getLimit();
         $this->results = $results;

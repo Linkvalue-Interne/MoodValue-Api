@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
-use Ramsey\Uuid\Uuid;
+use AppBundle\Pagination\PaginatedRepresentation;
+use AppBundle\Pagination\ResourceCriteria;
+use MoodValue\Model\User\UserId;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,15 +19,29 @@ class EventController extends Controller
      */
     public function getEventsAction(Request $request)
     {
-        return new JsonResponse([
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'name' => 'Contrib',
-                'text' => 'Comment était la contrib?',
-                'date' => (new \DateTimeImmutable())->format(\DateTime::ISO8601),
-                'mobile_splashscreen' => true,
-            ]
-        ]);
+        $resourceCriteria = new ResourceCriteria($request->query->all());
+
+        $eventsCollectionResult = $this->get('event.repository')->findAll(
+            $resourceCriteria->getStart(), $resourceCriteria->getLimit()
+        );
+
+        $pageResults = [];
+
+        foreach ($eventsCollectionResult->getResults() as $event) {
+            $pageResults[] = [
+                'id' => $event['id'],
+                'name' => $event['name'],
+                'text' => $event['text'],
+                'start_date' => (new \DateTimeImmutable($event['start_date']))->format(\DateTime::ISO8601),
+                'end_date' => (new \DateTimeImmutable($event['end_date']))->format(\DateTime::ISO8601),
+                'day_of_week' => (int) $event['day_of_week'],
+                'mobile_splashscreen' => (bool) $event['mobile_splashscreen']
+            ];
+        }
+
+        $paginatedRepresentation = new PaginatedRepresentation($resourceCriteria, $eventsCollectionResult->getTotal(), $pageResults);
+
+        return new JsonResponse($paginatedRepresentation->toArray());
     }
 
     /**
@@ -34,21 +50,28 @@ class EventController extends Controller
      */
     public function getEventsForUserAction(Request $request, $userId)
     {
-        return new JsonResponse([
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'name' => 'Contrib',
-                'text' => 'Comment était la contrib?',
-                'date' => (new \DateTimeImmutable())->format(\DateTime::ISO8601),
-                'mobile_splashscreen' => true,
-            ],
-            [
-                'id' => Uuid::uuid4()->toString(),
-                'name' => 'Inauguration',
-                'text' => 'Comment était la soirée d\'inauguration?',
-                'date' => (new \DateTimeImmutable())->format(\DateTime::ISO8601),
-                'mobile_splashscreen' => false,
-            ]
-        ]);
+        $resourceCriteria = new ResourceCriteria($request->query->all());
+
+        $eventsCollectionResult = $this->get('event.repository')->findAllForUser(
+            UserId::fromString($userId), $resourceCriteria->getStart(), $resourceCriteria->getLimit()
+        );
+
+        $pageResults = [];
+
+        foreach ($eventsCollectionResult->getResults() as $event) {
+            $pageResults[] = [
+                'id' => $event['id'],
+                'name' => $event['name'],
+                'text' => $event['text'],
+                'start_date' => (new \DateTimeImmutable($event['start_date']))->format(\DateTime::ISO8601),
+                'end_date' => (new \DateTimeImmutable($event['end_date']))->format(\DateTime::ISO8601),
+                'day_of_week' => (int) $event['day_of_week'],
+                'mobile_splashscreen' => (bool) $event['mobile_splashscreen']
+            ];
+        }
+
+        $paginatedRepresentation = new PaginatedRepresentation($resourceCriteria, $eventsCollectionResult->getTotal(), $pageResults);
+
+        return new JsonResponse($paginatedRepresentation->toArray());
     }
 }
