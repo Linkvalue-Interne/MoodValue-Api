@@ -8,7 +8,7 @@ use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
-use Ramsey\Uuid\Uuid;
+use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

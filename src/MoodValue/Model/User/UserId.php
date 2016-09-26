@@ -2,7 +2,7 @@
 
 namespace MoodValue\Model\User;
 
-use Ramsey\Uuid\Uuid;
+use Rhumsaa\Uuid\Uuid;
 
 final class UserId
 {

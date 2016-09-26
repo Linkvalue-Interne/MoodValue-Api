@@ -28,9 +28,14 @@
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
-        "ramsey/uuid": "^3.5",
+        "ramsey/uuid": "^2.8",
         "doctrine/doctrine-migrations-bundle": "^1.2",
-        "linkvalue/mobile-notif-bundle": "^0.2"
+        "linkvalue/mobile-notif-bundle": "^0.2",
+        "prooph/service-bus-symfony-bundle": "^0.2.0",
+        "prooph/event-store-symfony-bundle": "^0.2.2",
+        "prooph/event-sourcing": "^4.0",
+        "prooph/event-store-doctrine-adapter": "^3.2",
+        "prooph/event-store-bus-bridge": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
