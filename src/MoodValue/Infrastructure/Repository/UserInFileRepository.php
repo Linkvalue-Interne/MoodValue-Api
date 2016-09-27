@@ -32,7 +32,7 @@ class UserInFileRepository implements UserRepository
         $users = $this->getContent();
 
         if (isset($users[$userId->toString()])) {
-            return User::create(
+            return User::registerWithData(
                 UserId::fromString($users[$userId->toString()][0]),
                 EmailAddress::fromString($users[$userId->toString()][1]),
                 DeviceToken::fromString($users[$userId->toString()][2])

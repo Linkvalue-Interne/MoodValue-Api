@@ -1,28 +1,4 @@
 services:
-    user.repository:
-        alias: user.mysql.repository
-
-    user.in_memory.repository:
-        class: MoodValue\Infrastructure\Repository\UserInMemoryRepository
-        public: false
-
-    user.in_file.repository:
-        class: MoodValue\Infrastructure\Repository\UserInFileRepository
-        public: false
-        arguments:
-            - "%kernel.root_dir%"
-
-    user.mysql.repository:
-        class: MoodValue\Infrastructure\Repository\UserMysqlRepository
-        public: false
-        arguments:
-            - "@doctrine.dbal.default_connection"
-
-    event.repository:
-        alias: event.mysql.repository
-
-    event.mysql.repository:
-        class: MoodValue\Infrastructure\Repository\EventMysqlRepository
-        public: false
-        arguments:
-            - "@doctrine.dbal.default_connection"
+    moodvalue.register_user_handler:
+        class: MoodValue\Model\User\Handler\RegisterUserHandler
+        arguments: ['@user_repository']

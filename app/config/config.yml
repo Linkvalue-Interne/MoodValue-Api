@@ -2,6 +2,9 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: event_store.yml }
+    - { resource: service_bus.yml }
+    - { resource: projection.yml }
 
 parameters:
     locale: en

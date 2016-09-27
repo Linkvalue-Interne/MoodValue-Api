@@ -1,0 +1,8 @@
+services:
+  moodvalue.moodvalue_projection.user_finder:
+    class: MoodValue\Projection\User\UserFinder
+    arguments: ['@doctrine.dbal.default_connection']
+
+  moodvalue.moodvalue_projection.user_projector:
+    class: MoodValue\Projection\User\UserProjector
+    arguments: ['@doctrine.dbal.default_connection', '@moodvalue.moodvalue_projection.user_finder']

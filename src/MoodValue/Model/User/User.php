@@ -2,7 +2,10 @@
 
 namespace MoodValue\Model\User;
 
-class User
+use MoodValue\Model\User\Event\UserWasRegistered;
+use Prooph\EventSourcing\AggregateRoot;
+
+class User extends AggregateRoot
 {
     /**
      * @var UserId
@@ -24,52 +27,54 @@ class User
      */
     private $createdAt;
 
-    private function __construct() {}
-
-    public static function create(
+    public static function registerWithData(
         UserId $userId,
         EmailAddress $emailAddress,
         DeviceToken $deviceToken
     ) : User
     {
         $user = new self();
-        $user->userId = $userId;
-        $user->emailAddress = $emailAddress;
-        $user->deviceToken = $deviceToken;
-        $user->createdAt = new \DateTimeImmutable('now');
+
+        $createdAt = new \DateTimeImmutable('now');
+
+        $user->recordThat(UserWasRegistered::withData($userId, $emailAddress, $deviceToken, $createdAt));
 
         return $user;
     }
 
-    /**
-     * @return UserId
-     */
-    public function getUserId()
+    public function getUserId() : UserId
     {
         return $this->userId;
     }
 
-    /**
-     * @return EmailAddress
-     */
-    public function getEmailAddress()
+    public function getEmailAddress() : EmailAddress
     {
         return $this->emailAddress;
     }
 
-    /**
-     * @return DeviceToken
-     */
-    public function getDeviceToken()
+    public function getDeviceToken() : DeviceToken
     {
         return $this->deviceToken;
     }
 
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getCreatedAt()
+    public function getCreatedAt() : \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return string representation of the unique identifier of the aggregate root
+     */
+    protected function aggregateId()
+    {
+        return $this->userId->toString();
+    }
+
+    protected function whenUserWasRegistered(UserWasRegistered $event)
+    {
+        $this->userId = $event->userId();
+        $this->emailAddress = $event->emailAddress();
+        $this->deviceToken = $event->deviceToken();
+        $this->createdAt = $event->createdAt();
     }
 }

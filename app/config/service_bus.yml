@@ -1,0 +1,19 @@
+prooph_service_bus:
+  command_buses:
+    moodvalue_command_bus:
+      plugins:
+        - 'prooph_event_store_bus_bridge.transaction_manager'
+      router:
+        type: 'prooph_service_bus.command_bus_router'
+        routes:
+          'MoodValue\Model\User\Command\RegisterUser': 'moodvalue.register_user_handler'
+
+  event_buses:
+    moodvalue_event_bus:
+      plugins:
+        - 'prooph_service_bus.on_event_invoke_strategy'
+      router:
+        type: 'prooph_service_bus.event_bus_router'
+        routes:
+          'MoodValue\Model\User\Event\UserWasRegistered':
+            - 'moodvalue.moodvalue_projection.user_projector'

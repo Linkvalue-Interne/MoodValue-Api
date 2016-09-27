@@ -18,6 +18,8 @@ class AppKernel extends Kernel
             new LinkValue\MobileNotifBundle\LinkValueMobileNotifBundle(),
             new AppBundle\AppBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new \Prooph\Bundle\EventStore\ProophEventStoreBundle(),
+            new \Prooph\Bundle\ServiceBus\ProophServiceBusBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

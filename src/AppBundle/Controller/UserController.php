@@ -60,7 +60,7 @@ class UserController extends Controller
         $userRepository = $this->get('user.repository');
         $userEmailAlreadyExists = $userRepository->emailExists($userEmail);
 
-        $user = User::create(
+        $user = User::registerWithData(
             UserId::generate(),
             $userEmail,
             DeviceToken::fromString($body['device_token'])
