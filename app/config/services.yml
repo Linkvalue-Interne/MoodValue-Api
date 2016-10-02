@@ -2,3 +2,7 @@ services:
     moodvalue.register_user_handler:
         class: MoodValue\Model\User\Handler\RegisterUserHandler
         arguments: ['@user_repository']
+
+    moodvalue.add_event_handler:
+        class: MoodValue\Model\Event\Handler\AddEventHandler
+        arguments: ['@event_repository']

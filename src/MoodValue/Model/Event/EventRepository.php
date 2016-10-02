@@ -6,5 +6,5 @@ interface EventRepository
 {
     public function add(Event $event);
 
-    public function get(EventId $eventId);
+    public function get(EventId $eventId) : Event;
 }

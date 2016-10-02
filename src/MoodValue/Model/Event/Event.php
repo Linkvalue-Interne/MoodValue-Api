@@ -2,29 +2,47 @@
 
 namespace MoodValue\Model\Event;
 
-use MoodValue\Model\User\UserId;
+use MoodValue\Model\Event\Event\EventWasAdded;
+use Prooph\EventSourcing\AggregateRoot;
 
-class Event
+class Event extends AggregateRoot
 {
+    /**
+     * @var EventId
+     */
     private $eventId;
 
+    /**
+     * @var string
+     */
     private $name;
 
+    /**
+     * @var string
+     */
     private $text;
 
+    /**
+     * @var \DateTimeInterface
+     */
     private $startDate;
 
+    /**
+     * @var \DateTimeInterface
+     */
     private $endDate;
 
+    /**
+     * @var int
+     */
     private $dayOfWeek;
 
+    /**
+     * @var bool
+     */
     private $mobileSplashscreen;
 
-    private $users;
-
-    private function __construct() {}
-
-    public function create(
+    public static function add(
         EventId $eventId,
         string $name,
         string $text,
@@ -42,6 +60,16 @@ class Event
         $event->endDate = $endDate;
         $event->dayOfWeek = $dayOfWeek;
         $event->mobileSplashscreen = $mobileSplashscreen;
+
+        $event->recordThat(EventWasAdded::withData(
+            $eventId,
+            $name,
+            $text,
+            $startDate,
+            $endDate,
+            $dayOfWeek,
+            $mobileSplashscreen
+        ));
 
         return $event;
     }
@@ -81,16 +109,22 @@ class Event
         return $this->mobileSplashscreen;
     }
 
-    public function add(UserId $userId)
+    /**
+     * @return string representation of the unique identifier of the aggregate root
+     */
+    protected function aggregateId()
     {
-        $this->users[$userId->toString()] = $userId;
+        return $this->eventId->toString();
     }
 
-    /**
-     * @return UserId[]
-     */
-    public function getUsers() : array
+    protected function whenEventWasAdded(EventWasAdded $event)
     {
-        return $this->users;
+        $this->eventId = $event->eventId();
+        $this->name = $event->name();
+        $this->text = $event->text();
+        $this->startDate = $event->startDate();
+        $this->endDate = $event->endDate();
+        $this->dayOfWeek = $event->dayOfWeek();
+        $this->mobileSplashscreen = $event->mobileSplashscreen();
     }
 }

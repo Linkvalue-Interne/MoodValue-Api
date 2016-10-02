@@ -1,19 +1,22 @@
 prooph_service_bus:
-  command_buses:
-    moodvalue_command_bus:
-      plugins:
-        - 'prooph_event_store_bus_bridge.transaction_manager'
-      router:
-        type: 'prooph_service_bus.command_bus_router'
-        routes:
-          'MoodValue\Model\User\Command\RegisterUser': 'moodvalue.register_user_handler'
+    command_buses:
+        moodvalue_command_bus:
+            plugins:
+                - prooph_event_store_bus_bridge.transaction_manager
+            router:
+                type: prooph_service_bus.command_bus_router
+                routes:
+                    MoodValue\Model\User\Command\RegisterUser: moodvalue.register_user_handler
+                    MoodValue\Model\Event\Command\AddEvent: moodvalue.add_event_handler
 
-  event_buses:
-    moodvalue_event_bus:
-      plugins:
-        - 'prooph_service_bus.on_event_invoke_strategy'
-      router:
-        type: 'prooph_service_bus.event_bus_router'
-        routes:
-          'MoodValue\Model\User\Event\UserWasRegistered':
-            - 'moodvalue.moodvalue_projection.user_projector'
+    event_buses:
+        moodvalue_event_bus:
+            plugins:
+                - prooph_service_bus.on_event_invoke_strategy
+            router:
+                type: prooph_service_bus.event_bus_router
+                routes:
+                    MoodValue\Model\User\Event\UserWasRegistered:
+                        - moodvalue.moodvalue_projection.user_projector
+                    MoodValue\Model\Event\Event\EventWasAdded:
+                        - moodvalue.moodvalue_projection.event_projector

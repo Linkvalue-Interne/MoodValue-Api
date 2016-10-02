@@ -1,8 +1,16 @@
 services:
-  moodvalue.moodvalue_projection.user_finder:
-    class: MoodValue\Projection\User\UserFinder
-    arguments: ['@doctrine.dbal.default_connection']
+    moodvalue.moodvalue_projection.user_finder:
+        class: MoodValue\Projection\User\UserFinder
+        arguments: ['@doctrine.dbal.default_connection']
 
-  moodvalue.moodvalue_projection.user_projector:
-    class: MoodValue\Projection\User\UserProjector
-    arguments: ['@doctrine.dbal.default_connection', '@moodvalue.moodvalue_projection.user_finder']
+    moodvalue.moodvalue_projection.user_projector:
+        class: MoodValue\Projection\User\UserProjector
+        arguments: ['@doctrine.dbal.default_connection', '@moodvalue.moodvalue_projection.user_finder']
+
+    moodvalue.moodvalue_projection.event_finder:
+        class: MoodValue\Projection\Event\EventFinder
+        arguments: ['@doctrine.dbal.default_connection']
+
+    moodvalue.moodvalue_projection.event_projector:
+        class: MoodValue\Projection\Event\EventProjector
+        arguments: ['@doctrine.dbal.default_connection', '@moodvalue.moodvalue_projection.event_finder']

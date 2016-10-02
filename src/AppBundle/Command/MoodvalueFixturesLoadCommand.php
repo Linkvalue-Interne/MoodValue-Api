@@ -2,6 +2,8 @@
 
 namespace AppBundle\Command;
 
+use MoodValue\Model\Event\Command\AddEvent;
+use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\Command\RegisterUser;
 use MoodValue\Model\User\UserId;
 use Rhumsaa\Uuid\Uuid;
@@ -22,7 +24,7 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
     {
         $output->writeln('Loading fixtures...');
         $this->loadUsers($output);
-//        $this->loadEvents($output);
+        $this->loadEvents($output);
     }
 
     protected function loadUsers(OutputInterface $output)
@@ -50,6 +52,37 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
         }
 
         $output->writeln(sprintf('%d users have been created!', $nbCreatedUsers));
+    }
+
+    protected function loadEvents(OutputInterface $output)
+    {
+        $nbAddedEvents = 0;
+
+        for ($i = 1; $i <= 100; $i++) {
+            $eventId = EventId::generate();
+
+            $this->getCommandBus()->dispatch(AddEvent::withData(
+                $eventId->toString(),
+                'name' . $i,
+                'text' . $i,
+                (new \DateTimeImmutable())->format(DATE_ISO8601),
+                (new \DateTimeImmutable('+5 days'))->format(DATE_ISO8601),
+                3,
+                true
+            ));
+
+            $nbAddedEvents++;
+
+            // Add some device tokens @TODO
+//            if ($i % 2) {
+//                $userRepository->addDeviceToken(
+//                    $user->getUserId(),
+//                    DeviceToken::fromString(Uuid::uuid4()->toString())
+//                );
+//            }
+        }
+
+        $output->writeln(sprintf('%d events have been added!', $nbAddedEvents));
     }
 
     /**
