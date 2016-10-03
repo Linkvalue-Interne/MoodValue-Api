@@ -2,6 +2,7 @@
 
 namespace MoodValue\Model\User;
 
+use MoodValue\Model\User\Event\DeviceTokenWasAdded;
 use MoodValue\Model\User\Event\UserWasRegistered;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -18,9 +19,9 @@ class User extends AggregateRoot
     private $emailAddress;
 
     /**
-     * @var DeviceToken
+     * @var DeviceToken[]
      */
-    private $deviceToken;
+    private $deviceTokens;
 
     /**
      * @var \DateTimeInterface
@@ -52,14 +53,22 @@ class User extends AggregateRoot
         return $this->emailAddress;
     }
 
-    public function getDeviceToken() : DeviceToken
+    /**
+     * @return DeviceToken[]
+     */
+    public function getDeviceTokens() : array
     {
-        return $this->deviceToken;
+        return $this->deviceTokens;
     }
 
     public function getCreatedAt() : \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function addDeviceToken(DeviceToken $deviceToken)
+    {
+        $this->recordThat(DeviceTokenWasAdded::withData($this->userId, $deviceToken));
     }
 
     /**
@@ -74,7 +83,14 @@ class User extends AggregateRoot
     {
         $this->userId = $event->userId();
         $this->emailAddress = $event->emailAddress();
-        $this->deviceToken = $event->deviceToken();
+        $this->deviceTokens = [$event->deviceToken()];
         $this->createdAt = $event->createdAt();
+    }
+
+    protected function whenDeviceTokenWasAdded(DeviceTokenWasAdded $event)
+    {
+        $this->userId = $event->userId();
+
+        $this->deviceTokens[] = $event->deviceToken();
     }
 }

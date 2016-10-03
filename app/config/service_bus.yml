@@ -7,6 +7,7 @@ prooph_service_bus:
                 type: prooph_service_bus.command_bus_router
                 routes:
                     MoodValue\Model\User\Command\RegisterUser: moodvalue.register_user_handler
+                    MoodValue\Model\User\Command\AddDeviceTokenToUser: moodvalue.add_device_token_to_user_handler
                     MoodValue\Model\Event\Command\AddEvent: moodvalue.add_event_handler
 
     event_buses:
@@ -17,6 +18,8 @@ prooph_service_bus:
                 type: prooph_service_bus.event_bus_router
                 routes:
                     MoodValue\Model\User\Event\UserWasRegistered:
+                        - moodvalue.moodvalue_projection.user_projector
+                    MoodValue\Model\User\Event\DeviceTokenWasAdded:
                         - moodvalue.moodvalue_projection.user_projector
                     MoodValue\Model\Event\Event\EventWasAdded:
                         - moodvalue.moodvalue_projection.event_projector

@@ -3,6 +3,7 @@
 namespace MoodValue\Projection\User;
 
 use Doctrine\DBAL\Connection;
+use MoodValue\Model\User\Event\DeviceTokenWasAdded;
 use MoodValue\Model\User\Event\UserWasRegistered;
 
 class UserProjector
@@ -32,6 +33,29 @@ class UserProjector
                 'email' => $event->emailAddress()->toString(),
                 'device_tokens' => $event->deviceToken()->toString(),
                 'created_at' => $event->createdAt()->format('Y-m-d H:i:s')
+            ]
+        );
+    }
+
+    public function onDeviceTokenWasAdded(DeviceTokenWasAdded $event)
+    {
+        $user = $this->userFinder->findOneById($event->userId());
+
+        $userDeviceTokens = explode(',', $user['device_tokens']);
+
+        if (in_array($event->deviceToken()->toString(), $userDeviceTokens)) {
+            return;
+        }
+
+        $userDeviceTokens[] = $event->deviceToken()->toString();
+
+        $this->connection->update(
+            UserFinder::TABLE_USER,
+            [
+                'device_tokens' => implode(',', $userDeviceTokens)
+            ],
+            [
+                'id' => $event->userId()->toString()
             ]
         );
     }

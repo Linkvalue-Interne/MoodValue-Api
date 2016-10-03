@@ -33,7 +33,7 @@ class UserMysqlRepository implements UserRepository
         return $this->connection->insert(self::TABLE_USER, [
             'id' => $user->getUserId()->toString(),
             'email' => $user->getEmailAddress()->toString(),
-            'device_tokens' => $user->getDeviceToken()->toString(),
+            'device_tokens' => $user->getDeviceTokens()->toString(),
             'created_at' => $user->getCreatedAt()->format('Y-m-d H:i:s')
         ]);
     }

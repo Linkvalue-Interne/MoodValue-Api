@@ -4,7 +4,9 @@ namespace AppBundle\Command;
 
 use MoodValue\Model\Event\Command\AddEvent;
 use MoodValue\Model\Event\EventId;
+use MoodValue\Model\User\Command\AddDeviceTokenToUser;
 use MoodValue\Model\User\Command\RegisterUser;
+use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\UserId;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -42,13 +44,13 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
 
             $nbCreatedUsers++;
 
-            // Add some device tokens @TODO
-//            if ($i % 2) {
-//                $userRepository->addDeviceToken(
-//                    $user->getUserId(),
-//                    DeviceToken::fromString(Uuid::uuid4()->toString())
-//                );
-//            }
+            // Add some device tokens
+            if ($i % 2) {
+                $this->getCommandBus()->dispatch(AddDeviceTokenToUser::withData(
+                    $userId->toString(),
+                    Uuid::uuid4()->toString()
+                ));
+            }
         }
 
         $output->writeln(sprintf('%d users have been created!', $nbCreatedUsers));
@@ -72,14 +74,6 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
             ));
 
             $nbAddedEvents++;
-
-            // Add some device tokens @TODO
-//            if ($i % 2) {
-//                $userRepository->addDeviceToken(
-//                    $user->getUserId(),
-//                    DeviceToken::fromString(Uuid::uuid4()->toString())
-//                );
-//            }
         }
 
         $output->writeln(sprintf('%d events have been added!', $nbAddedEvents));

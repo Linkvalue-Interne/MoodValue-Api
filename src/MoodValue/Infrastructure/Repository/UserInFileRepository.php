@@ -21,7 +21,7 @@ class UserInFileRepository implements UserRepository
 
         $users[$user->getUserId()->toString()] = [
             $user->getEmailAddress()->toString(),
-            $user->getDeviceToken()->toString()
+            $user->getDeviceTokens()->toString()
         ];
 
         $this->putContent($users);
