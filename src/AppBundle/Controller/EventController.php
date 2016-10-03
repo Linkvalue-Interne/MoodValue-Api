@@ -21,7 +21,7 @@ class EventController extends Controller
     {
         $resourceCriteria = new ResourceCriteria($request->query->all());
 
-        $eventsCollectionResult = $this->get('event.repository')->findAll(
+        $eventsCollectionResult = $this->get('moodvalue.moodvalue_projection.event_finder')->findAll(
             $resourceCriteria->getStart(), $resourceCriteria->getLimit()
         );
 
@@ -52,7 +52,7 @@ class EventController extends Controller
     {
         $resourceCriteria = new ResourceCriteria($request->query->all());
 
-        $eventsCollectionResult = $this->get('event.repository')->findAllForUser(
+        $eventsCollectionResult = $this->get('moodvalue.moodvalue_projection.event_finder')->findAllForUser(
             UserId::fromString($userId), $resourceCriteria->getStart(), $resourceCriteria->getLimit()
         );
 

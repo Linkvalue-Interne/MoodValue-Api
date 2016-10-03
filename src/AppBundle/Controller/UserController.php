@@ -29,7 +29,7 @@ class UserController extends Controller
     {
         $resourceCriteria = new ResourceCriteria($request->query->all());
 
-        $usersCollectionResult = $this->get('user.repository')->findAll(
+        $usersCollectionResult = $this->get('moodvalue.moodvalue_projection.user_finder')->findAll(
             $resourceCriteria->getStart(), $resourceCriteria->getLimit()
         );
 
@@ -55,28 +55,28 @@ class UserController extends Controller
      */
     public function createUserAction(Request $request)
     {
-        $body = json_decode($request->getContent(), true);
-        $userEmail = EmailAddress::fromString($body['email']);
-        $userRepository = $this->get('user.repository');
-        $userEmailAlreadyExists = $userRepository->emailExists($userEmail);
-
-        $user = User::registerWithData(
-            UserId::generate(),
-            $userEmail,
-            DeviceToken::fromString($body['device_token'])
-        );
-
-        if (!$userEmailAlreadyExists) {
-            $userRepository->add($user);
-        } else {
-            // Add deviceToken to user if it's a new one
-            $userRepository->addDeviceToken($user->getUserId(), $user->getDeviceToken());
-        }
-
-        return new JsonResponse([
-            'id' => $user->getUserId()->toString(),
-            'email' => $user->getEmailAddress()->toString()
-        ], $userEmailAlreadyExists ? Response::HTTP_OK : Response::HTTP_CREATED);
+//        $body = json_decode($request->getContent(), true);
+//        $userEmail = EmailAddress::fromString($body['email']);
+//        $userRepository = $this->get('moodvalue.moodvalue_projection.user_finder');
+//        $userEmailAlreadyExists = $userRepository->emailExists($userEmail);
+//
+//        $user = User::registerWithData(
+//            UserId::generate(),
+//            $userEmail,
+//            DeviceToken::fromString($body['device_token'])
+//        );
+//
+//        if (!$userEmailAlreadyExists) {
+//            $userRepository->add($user);
+//        } else {
+//            // Add deviceToken to user if it's a new one
+//            $userRepository->addDeviceToken($user->getUserId(), $user->getDeviceToken());
+//        }
+//
+//        return new JsonResponse([
+//            'id' => $user->getUserId()->toString(),
+//            'email' => $user->getEmailAddress()->toString()
+//        ], $userEmailAlreadyExists ? Response::HTTP_OK : Response::HTTP_CREATED);
     }
 
     /**
