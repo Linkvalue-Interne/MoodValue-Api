@@ -8,6 +8,8 @@ use MoodValue\Model\User\UserRepository;
 
 class UserInMemoryRepository implements UserRepository
 {
+    private $users;
+
     public function __construct()
     {
         $this->users = [];
@@ -18,7 +20,7 @@ class UserInMemoryRepository implements UserRepository
         $this->users[$user->getUserId()->toString()] = $user;
     }
 
-    public function get(UserId $userId)
+    public function get(UserId $userId) : User
     {
         return $this->users[$userId->toString()];
     }
