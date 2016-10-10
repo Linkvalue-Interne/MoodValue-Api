@@ -3,6 +3,7 @@
 namespace MoodValue\Behat;
 
 use Prooph\Common\Messaging\Message;
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventStore\Aggregate\AggregateType;
@@ -17,12 +18,26 @@ trait EventChecker
     private $aggregateTranslator;
 
     /**
-     * @var Message
+     * @var Message[]
      */
     private $events;
 
     /**
-     * @return Message[]
+     * Define an additional catchall router and adds it to a specific event bus.
+     * The recorded events are stored in $this->events.
+     */
+    protected function startCollectingEventsFromBus(EventBus $eventBus)
+    {
+        $router = new RegexRouter();
+        $router->route(RegexRouter::ALL)->to(function ($event) {
+            $this->events[] = $event;
+        });
+
+        $eventBus->utilize($router);
+    }
+
+    /**
+     * @return AggregateChanged[]
      */
     protected function popRecordedEvent(AggregateRoot $aggregateRoot) : array
     {
@@ -32,7 +47,7 @@ trait EventChecker
     /**
      * @return object Aggregate
      */
-    protected function reconstituteAggregateFromHistory(string $aggregateRootClass, array $events)
+    protected function reconstituteAggregateFromHistory($aggregateRootClass, array $events)
     {
         return $this->getAggregateTranslator()->reconstituteAggregateFromHistory(
             AggregateType::fromAggregateRootClass($aggregateRootClass),
@@ -41,18 +56,8 @@ trait EventChecker
     }
 
     /**
-     * Define an additional catchall router and adds it to a specific event bus
-     * The recorded events are stored in $this->events
+     * @return AggregateTranslator
      */
-    protected function startCollectingEventsFromBus(EventBus $eventBus)
-    {
-        $router = new RegexRouter();
-        $router->route(RegexRouter::ALL)->to(function ($event) {
-            $this->events[] = $event;
-        });
-        $eventBus->utilize($router);
-    }
-
     private function getAggregateTranslator() : AggregateTranslator
     {
         if (null === $this->aggregateTranslator) {

@@ -18,7 +18,7 @@ use PHPUnit_Framework_Assert as Assert;
  */
 class DomainContext implements Context
 {
-    use ProophTestCase;
+    use EventChecker;
 
     /**
      * @var array
