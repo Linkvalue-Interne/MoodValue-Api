@@ -13,7 +13,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/",
+            "MoodValue\\Specs\\": "tests/specs",
             "MoodValue\\Behat\\": "features/bootstrap"
         }
     },

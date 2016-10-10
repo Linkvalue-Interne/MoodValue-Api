@@ -1,0 +1,6 @@
+#matchers:
+#  - MoodValue\Specs\PhpSpec\Matcher\AggregateChangedRecorderMatcher
+
+suites:
+    default:
+        spec_path: 'tests'
