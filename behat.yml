@@ -3,5 +3,5 @@ default:
         locale: en
     suites:
         domain_features:
-            paths:    [ '%paths.base%/features' ]
+            paths:    [ '%paths.base%/tests/features' ]
             contexts: [ 'MoodValue\Behat\ApplicationContext' ]
