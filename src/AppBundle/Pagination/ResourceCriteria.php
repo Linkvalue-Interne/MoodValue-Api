@@ -20,7 +20,7 @@ class ResourceCriteria
     /**
      * @var int
      */
-    private $maxLimit = 100;
+    private $maxLimit = 1000;
 
     /**
      * @var int
