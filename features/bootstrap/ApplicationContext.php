@@ -6,29 +6,15 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use MoodValue\Model\User\DeviceToken;
-use MoodValue\Model\User\EmailAddress;
+use MoodValue\Model\User\Command\RegisterUser;
 use MoodValue\Model\User\Event\UserWasRegistered;
-use MoodValue\Model\User\User;
+use MoodValue\Model\User\Handler\RegisterUserHandler;
 use MoodValue\Model\User\UserId;
 use PHPUnit_Framework_Assert as Assert;
 
-/**
- * Defines application features from the Domain context
- */
-class DomainContext implements Context
+class ApplicationContext implements Context
 {
-    use ProophTestCase;
-
-    /**
-     * @var array
-     */
-    private $eventStore;
-
-    /**
-     * @var User
-     */
-    private $user;
+    use EventChecker;
 
     /**
      * @var string
@@ -46,6 +32,21 @@ class DomainContext implements Context
     private $thrownException;
 
     /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @var \Prooph\ServiceBus\EventBus
+     */
+    private $eventBus;
+
+    /**
+     * @var \Prooph\ServiceBus\CommandBus
+     */
+    private $commandBus;
+
+    /**
      * Initializes context
      *
      * Every scenario gets its own context instance.
@@ -54,7 +55,12 @@ class DomainContext implements Context
      */
     public function __construct()
     {
-        $this->eventStore = [];
+        $kernel = new \AppKernel('dev', false);
+        $kernel->boot();
+
+        $this->container = $kernel->getContainer();
+        $this->eventBus = $this->container->get('prooph_service_bus.moodvalue_event_bus');
+        $this->commandBus = $this->container->get('prooph_service_bus.moodvalue_command_bus');
     }
 
     /**
@@ -62,7 +68,6 @@ class DomainContext implements Context
      */
     public function iMNotRegisteredYet()
     {
-        $this->user = null;
     }
 
     /**
@@ -79,11 +84,15 @@ class DomainContext implements Context
      */
     public function iTryToRegister()
     {
+        $this->startCollectingEventsFromBus($this->eventBus);
+
         try {
-            $this->user = User::registerWithData(
-                UserId::generate(),
-                EmailAddress::fromString($this->userEmail),
-                DeviceToken::fromString($this->userDeviceToken)
+            $this->commandBus->dispatch(
+                RegisterUser::withData(
+                    UserId::generate()->toString(),
+                    $this->userEmail,
+                    $this->userDeviceToken
+                )
             );
         } catch (\Throwable $e) {
             $this->thrownException = $e;
@@ -95,13 +104,9 @@ class DomainContext implements Context
      */
     public function iShouldBeRegistered()
     {
-        Assert::assertInstanceOf(User::class, $this->user);
+        Assert::assertCount(1, $this->events);
 
-        $events = $this->popRecordedEvent($this->user);
-
-        Assert::assertCount(1, $events);
-
-        Assert::assertInstanceOf(UserWasRegistered::class, $events[0]);
+        Assert::assertInstanceOf(UserWasRegistered::class, $this->events[0]);
 
         $expectedPayload = [
             'email' => $this->userEmail,
@@ -109,7 +114,7 @@ class DomainContext implements Context
             'created_at' => (new \DateTimeImmutable())->format(DATE_ISO8601)
         ];
 
-        Assert::assertSame($expectedPayload, $events[0]->payload());
+        Assert::assertSame($expectedPayload, $this->events[0]->payload());
     }
 
     /**
@@ -117,7 +122,6 @@ class DomainContext implements Context
      */
     public function iShouldNotBeRegistered(string $message)
     {
-        Assert::assertEquals(null, $this->user);
-        Assert::assertEquals($message, $this->thrownException->getMessage());
+        Assert::assertEquals($message, $this->thrownException->getPrevious()->getMessage());
     }
 }

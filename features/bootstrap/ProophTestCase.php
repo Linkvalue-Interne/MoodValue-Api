@@ -1,5 +1,7 @@
 <?php
 
+namespace MoodValue\Behat;
+
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;

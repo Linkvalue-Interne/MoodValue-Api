@@ -4,4 +4,4 @@ default:
     suites:
         domain_features:
             paths:    [ '%paths.base%/features' ]
-            contexts: [ DomainContext ]
+            contexts: [ 'MoodValue\Behat\ApplicationContext' ]
