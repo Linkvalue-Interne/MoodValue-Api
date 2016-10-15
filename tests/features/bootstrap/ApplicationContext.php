@@ -8,8 +8,8 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use MoodValue\Model\User\Command\RegisterUser;
 use MoodValue\Model\User\Event\UserWasRegistered;
-use MoodValue\Model\User\Handler\RegisterUserHandler;
 use MoodValue\Model\User\UserId;
+use MoodValue\Tests\Util\EventChecker;
 use PHPUnit_Framework_Assert as Assert;
 
 class ApplicationContext implements Context

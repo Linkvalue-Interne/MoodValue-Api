@@ -11,6 +11,7 @@ use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\Event\UserWasRegistered;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
+use MoodValue\Tests\Util\EventChecker;
 use PHPUnit_Framework_Assert as Assert;
 
 /**

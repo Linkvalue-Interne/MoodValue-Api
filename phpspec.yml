@@ -1,5 +1,5 @@
-#matchers:
-#  - MoodValue\Specs\PhpSpec\Matcher\AggregateChangedRecorderMatcher
+matchers:
+  - MoodValue\Tests\Util\Matcher\AggregateChangedRecorderMatcher
 
 suites:
     default:
