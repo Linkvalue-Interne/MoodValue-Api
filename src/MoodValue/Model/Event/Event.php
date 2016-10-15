@@ -109,10 +109,7 @@ class Event extends AggregateRoot
         return $this->mobileSplashscreen;
     }
 
-    /**
-     * @return string representation of the unique identifier of the aggregate root
-     */
-    protected function aggregateId()
+    protected function aggregateId() : string
     {
         return $this->eventId->toString();
     }

@@ -71,10 +71,12 @@ class User extends AggregateRoot
         $this->recordThat(DeviceTokenWasAdded::withData($this->userId, $deviceToken));
     }
 
-    /**
-     * @return string representation of the unique identifier of the aggregate root
-     */
-    protected function aggregateId()
+    public static function fromHistory(\Iterator $historyEvents) : self
+    {
+        return self::reconstituteFromHistory($historyEvents);
+    }
+
+    protected function aggregateId() : string
     {
         return $this->userId->toString();
     }
