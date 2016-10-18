@@ -17,24 +17,17 @@ use MoodValue\Model\User\Event\UserWasRegistered;
 use MoodValue\Model\User\Handler\RegisterUserHandler;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
-use MoodValue\Tests\Util\EventChecker;
 use PHPUnit_Framework_Assert as Assert;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
-use Prooph\EventStore\Adapter\InMemoryAdapter;
-use Prooph\EventStore\Aggregate\AggregateType;
-use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\Stream;
-use Prooph\EventStore\Stream\StreamName;
-use Prooph\EventStoreBusBridge\EventPublisher;
+use Prooph\EventStore\{
+    Adapter\InMemoryAdapter, Aggregate\AggregateType, EventStore, Stream\Stream, Stream\StreamName
+};
 use Prooph\ServiceBus\CommandBus;
-use Prooph\ServiceBus\EventBus;
 use Prooph\ServiceBus\Plugin\Router\CommandRouter;
 
 class ApplicationContext implements Context
 {
-    use EventChecker;
-
     /**
      * @var string
      */
