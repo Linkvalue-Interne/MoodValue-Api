@@ -8,6 +8,7 @@ use MoodValue\Model\User\Command\AddDeviceTokenToUser;
 use MoodValue\Model\User\Command\RegisterUser;
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\UserId;
+use Prooph\ServiceBus\CommandBus;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,20 +35,18 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
         $nbCreatedUsers = 0;
 
         for ($i = 1; $i <= 100; $i++) {
-            $userId = UserId::generate();
-
             $this->getCommandBus()->dispatch(RegisterUser::withData(
-                $userId->toString(),
+                $userId = UserId::generate()->toString(),
                 sprintf('user%s@example.com', uniqid()),
                 Uuid::uuid4()->toString()
             ));
 
             $nbCreatedUsers++;
 
-            // Add some device tokens
+            // Add second device tokens for some of the users
             if ($i % 2) {
                 $this->getCommandBus()->dispatch(AddDeviceTokenToUser::withData(
-                    $userId->toString(),
+                    $userId,
                     Uuid::uuid4()->toString()
                 ));
             }
@@ -61,14 +60,12 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
         $nbAddedEvents = 0;
 
         for ($i = 1; $i <= 100; $i++) {
-            $eventId = EventId::generate();
-
             $this->getCommandBus()->dispatch(AddEvent::withData(
-                $eventId->toString(),
+                $eventId = EventId::generate()->toString(),
                 'name' . $i,
                 'text' . $i,
-                (new \DateTimeImmutable())->format(DATE_ISO8601),
-                (new \DateTimeImmutable('+5 days'))->format(DATE_ISO8601),
+                (new \DateTimeImmutable())->format(\DATE_ISO8601),
+                (new \DateTimeImmutable('+5 days'))->format(\DATE_ISO8601),
                 3,
                 true
             ));
@@ -79,10 +76,7 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
         $output->writeln(sprintf('%d events have been added!', $nbAddedEvents));
     }
 
-    /**
-     * @return \Prooph\ServiceBus\CommandBus
-     */
-    private function getCommandBus()
+    private function getCommandBus() : CommandBus
     {
         return $this->getContainer()->get('prooph_service_bus.moodvalue_command_bus');
     }
