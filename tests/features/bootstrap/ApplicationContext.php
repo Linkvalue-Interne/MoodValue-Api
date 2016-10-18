@@ -78,9 +78,6 @@ class ApplicationContext implements Context
         $this->eventStore = new EventStore($eventStoreAdapter, new ProophActionEventEmitter());
         $this->eventStore->beginTransaction();
 
-        $eventPublisher = new EventPublisher(new EventBus());
-        $eventPublisher->setUp($this->eventStore);
-
         $commandRouter = (new CommandRouter())
             ->route(RegisterUser::class)->to(new RegisterUserHandler(
                 new EventStoreUserRepository(
