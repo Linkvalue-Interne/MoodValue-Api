@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\MoodValue\Model\Event;
+namespace specs\MoodValue\Model\Event;
 
 use MoodValue\Model\Event\Event;
 use MoodValue\Model\Event\Event\EventWasAdded;

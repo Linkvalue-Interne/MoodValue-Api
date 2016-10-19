@@ -4,3 +4,4 @@ matchers:
 suites:
     default:
         spec_path: 'tests'
+        spec_prefix: 'specs'

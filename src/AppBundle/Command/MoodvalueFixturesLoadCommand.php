@@ -6,7 +6,6 @@ use MoodValue\Model\Event\Command\AddEvent;
 use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\Command\AddDeviceTokenToUser;
 use MoodValue\Model\User\Command\RegisterUser;
-use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\UserId;
 use Prooph\ServiceBus\CommandBus;
 use Rhumsaa\Uuid\Uuid;

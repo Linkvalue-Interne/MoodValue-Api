@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\MoodValue\Model\User;
+namespace specs\MoodValue\Model\User;
 
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
