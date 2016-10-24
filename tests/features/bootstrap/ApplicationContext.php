@@ -29,6 +29,16 @@ use Prooph\ServiceBus\Plugin\Router\CommandRouter;
 class ApplicationContext implements Context
 {
     /**
+     * @var EventStore
+     */
+    private $eventStore;
+
+    /**
+     * @var CommandBus
+     */
+    private $commandBus;
+
+    /**
      * @var string
      */
     private $userEmail;
@@ -44,14 +54,9 @@ class ApplicationContext implements Context
     private $thrownException;
 
     /**
-     * @var \Prooph\ServiceBus\CommandBus
+     * @var Event
      */
-    private $commandBus;
-
-    /**
-     * @var EventStore
-     */
-    private $eventStore;
+    private $event;
 
     /**
      * Initializes context
@@ -106,19 +111,13 @@ class ApplicationContext implements Context
     }
 
     /**
-     * @Given I provide (in)valid data:
+     * @Given I try to register with (in)valid data:
      */
     public function iProvideValidData(TableNode $table)
     {
         $this->userEmail = $table->getRow(1)[0];
         $this->userDeviceToken = $table->getRow(1)[1];
-    }
 
-    /**
-     * @When I try to register
-     */
-    public function iTryToRegister()
-    {
         try {
             $this->commandBus->dispatch(
                 RegisterUser::withData(
