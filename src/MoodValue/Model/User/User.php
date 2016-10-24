@@ -32,7 +32,7 @@ class User extends AggregateRoot
         UserId $userId,
         EmailAddress $emailAddress,
         DeviceToken $deviceToken
-    ) : User
+    ) : self
     {
         $user = new self();
 

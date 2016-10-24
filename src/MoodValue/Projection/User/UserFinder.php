@@ -22,18 +22,18 @@ class UserFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
-    public function findOneById(UserId $userId)
+    public function findOneById(UserId $userId) : array
     {
-        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s where id = :user_id', self::TABLE_USER));
+        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE id = :user_id', self::TABLE_USER));
         $stmt->bindValue('user_id', $userId->toString());
         $stmt->execute();
 
         return $stmt->fetch();
     }
 
-    public function findOneByEmail(EmailAddress $emailAddress)
+    public function findOneByEmail(EmailAddress $emailAddress) : array
     {
-        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s where email = :email', self::TABLE_USER));
+        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE email = :email', self::TABLE_USER));
         $stmt->bindValue('email', $emailAddress->toString());
         $stmt->execute();
 
@@ -42,7 +42,7 @@ class UserFinder
 
     public function emailExists(EmailAddress $emailAddress) : bool
     {
-        $stmt = $this->connection->prepare(sprintf('SELECT COUNT(*) FROM %s where email = :email', self::TABLE_USER));
+        $stmt = $this->connection->prepare(sprintf('SELECT COUNT(*) FROM %s WHERE email = :email', self::TABLE_USER));
         $stmt->bindValue('email', $emailAddress->toString());
         $stmt->execute();
 

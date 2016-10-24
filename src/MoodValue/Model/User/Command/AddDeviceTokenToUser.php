@@ -12,7 +12,7 @@ final class AddDeviceTokenToUser extends Command implements PayloadConstructable
 {
     use PayloadTrait;
 
-    public static function withData(string $userId, string $deviceToken)
+    public static function withData(string $userId, string $deviceToken) : self
     {
         return new self(
             [

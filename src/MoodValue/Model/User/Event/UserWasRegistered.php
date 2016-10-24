@@ -20,7 +20,7 @@ final class UserWasRegistered extends AggregateChanged
         EmailAddress $emailAddress,
         DeviceToken $deviceToken,
         \DateTimeInterface $createdAt
-    ) : UserWasRegistered
+    ) : self
     {
         $event = self::occur(
             $userId->toString(),

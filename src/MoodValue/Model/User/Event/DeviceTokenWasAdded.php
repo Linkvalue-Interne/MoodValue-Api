@@ -14,7 +14,8 @@ final class DeviceTokenWasAdded extends AggregateChanged
     public static function withData(
         UserId $userId,
         DeviceToken $deviceToken
-    ) {
+    ) : self
+    {
         $event = self::occur(
             $userId->toString(),
             [

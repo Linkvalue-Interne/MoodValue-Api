@@ -23,7 +23,7 @@ final class EventWasAdded extends AggregateChanged
         \DateTimeInterface $endDate,
         int $dayOfWeek,
         bool $mobileSplashscreen
-    ) : EventWasAdded
+    ) : self
     {
         $event = self::occur(
             $eventId->toString(),

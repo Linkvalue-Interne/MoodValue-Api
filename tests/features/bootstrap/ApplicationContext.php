@@ -139,7 +139,6 @@ class ApplicationContext implements Context
         $events = iterator_to_array($this->eventStore->getRecordedEvents());
 
         Assert::assertCount(1, $events);
-
         Assert::assertInstanceOf(UserWasRegistered::class, $events[0]);
 
         $expectedPayload = [
@@ -195,7 +194,6 @@ class ApplicationContext implements Context
         $events = iterator_to_array($this->eventStore->getRecordedEvents());
 
         Assert::assertCount(1, $events);
-
         Assert::assertInstanceOf(EventWasAdded::class, $events[0]);
 
         $expectedPayload = [

@@ -19,7 +19,7 @@ final class AddEvent extends Command implements PayloadConstructable
         string $endDate,
         int $dayOfWeek,
         bool $mobileSplashscreen
-    )
+    ) : self
     {
         return new self(
             [
