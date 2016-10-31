@@ -42,7 +42,9 @@ class UserSpec extends ObjectBehavior
                 )
             ])
         ]);
+
         $this->addDeviceToken($deviceToken = DeviceToken::fromString(md5('second token')));
+
         $this->shouldHaveRecorded(DeviceTokenWasAdded::withData($userId, $deviceToken));
     }
 
@@ -58,7 +60,9 @@ class UserSpec extends ObjectBehavior
                 )
             ])
         ]);
+
         $this->join($eventId = EventId::generate());
+
         $this->shouldHaveRecorded(UserJoinedEvent::withData($userId, $eventId, new \DateTimeImmutable('now')));
     }
 }
