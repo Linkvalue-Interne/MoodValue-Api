@@ -91,34 +91,26 @@ class ApplicationContext implements Context
         $this->eventStore = new EventStore($eventStoreAdapter, new ProophActionEventEmitter());
         $this->eventStore->beginTransaction();
 
+
+        $userRepository = new EventStoreUserRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(User::class),
+            new AggregateTranslator(),
+            null,
+            $streamName
+        );
+        $eventRepository = new EventStoreEventRepository(
+            $this->eventStore,
+            AggregateType::fromAggregateRootClass(Event::class),
+            new AggregateTranslator(),
+            null,
+            $streamName
+        );
+
         $commandRouter = (new CommandRouter())
-            ->route(RegisterUser::class)->to(new RegisterUserHandler(
-                new EventStoreUserRepository(
-                    $this->eventStore,
-                    AggregateType::fromAggregateRootClass(User::class),
-                    new AggregateTranslator(),
-                    null,
-                    $streamName
-                )
-            ))
-            ->route(AddEvent::class)->to(new AddEventHandler(
-                new EventStoreEventRepository(
-                    $this->eventStore,
-                    AggregateType::fromAggregateRootClass(Event::class),
-                    new AggregateTranslator(),
-                    null,
-                    $streamName
-                )
-            ))
-            ->route(AddUserToEvent::class)->to(new AddUserToEventHandler(
-                new EventStoreUserRepository(
-                    $this->eventStore,
-                    AggregateType::fromAggregateRootClass(User::class),
-                    new AggregateTranslator(),
-                    null,
-                    $streamName
-                )
-            ));
+            ->route(RegisterUser::class)->to(new RegisterUserHandler($userRepository))
+            ->route(AddEvent::class)->to(new AddEventHandler($eventRepository))
+            ->route(AddUserToEvent::class)->to(new AddUserToEventHandler($userRepository));
         $this->commandBus = new CommandBus();
         $this->commandBus->utilize($commandRouter);
     }

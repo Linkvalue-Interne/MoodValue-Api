@@ -23,6 +23,6 @@ final class AddUserToEventHandler
 
         $user->join($command->eventId());
 
-        $this->userRepository->add($user);
+        $this->userRepository->add($user); // @todo rm ?
     }
 }
