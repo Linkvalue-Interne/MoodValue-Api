@@ -9,10 +9,15 @@ use Behat\Gherkin\Node\TableNode;
 use MoodValue\Infrastructure\Repository\EventStoreEventRepository;
 use MoodValue\Infrastructure\Repository\EventStoreUserRepository;
 use MoodValue\Model\Event\Command\AddEvent;
+use MoodValue\Model\Event\Command\AddUserToEvent;
 use MoodValue\Model\Event\Event;
 use MoodValue\Model\Event\Event\EventWasAdded;
+use MoodValue\Model\Event\EventId;
 use MoodValue\Model\Event\Handler\AddEventHandler;
+use MoodValue\Model\Event\Handler\AddUserToEventHandler;
 use MoodValue\Model\User\Command\RegisterUser;
+use MoodValue\Model\User\DeviceToken;
+use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\Event\UserWasRegistered;
 use MoodValue\Model\User\Handler\RegisterUserHandler;
 use MoodValue\Model\User\User;
@@ -54,9 +59,19 @@ class ApplicationContext implements Context
     private $thrownException;
 
     /**
-     * @var Event
+     * @var array MoodValue event input data
      */
     private $event;
+
+    /**
+     * @var UserId
+     */
+    private $userId;
+
+    /**
+     * @var EventId
+     */
+    private $eventId;
 
     /**
      * Initializes context
@@ -90,6 +105,15 @@ class ApplicationContext implements Context
                 new EventStoreEventRepository(
                     $this->eventStore,
                     AggregateType::fromAggregateRootClass(Event::class),
+                    new AggregateTranslator(),
+                    null,
+                    $streamName
+                )
+            ))
+            ->route(AddUserToEvent::class)->to(new AddUserToEventHandler(
+                new EventStoreUserRepository(
+                    $this->eventStore,
+                    AggregateType::fromAggregateRootClass(User::class),
                     new AggregateTranslator(),
                     null,
                     $streamName
@@ -206,5 +230,76 @@ class ApplicationContext implements Context
         ];
 
         Assert::assertSame($expectedPayload, $events[0]->payload());
+    }
+
+    /**
+     * ===== ADD USER TO EVENT
+     */
+
+    /**
+     * @Given I'm registered
+     */
+    public function iMRegistered()
+    {
+        $this->eventStore->appendTo(new StreamName('moodvalue_test_event_stream'), new \ArrayIterator([
+            $userWasRegistered = UserWasRegistered::withData(
+                $this->userId = UserId::fromString('4bd5dfb0-2527-41db-b8a4-58400ee97857'),
+                EmailAddress::fromString('john.doe@example.com'),
+                DeviceToken::fromString(md5('test')),
+                new \DateTimeImmutable('now')
+            )->withAddedMetadata('aggregate_type', User::class)
+        ]));
+    }
+
+    /**
+     * @Given there is an event
+     */
+    public function thereIsAnEventCalled()
+    {
+        $this->eventStore->appendTo(new StreamName('moodvalue_test_event_stream'), new \ArrayIterator([
+            EventWasAdded::withData(
+                $this->eventId = EventId::generate(),
+                'Halloween',
+                'text',
+                new \DateTimeImmutable('now'),
+                new \DateTimeImmutable('+10 days'),
+                2,
+                true
+            )->withAddedMetadata('aggregate_type', Event::class)
+        ]));
+    }
+
+    /**
+     * @When I add myself to the event
+     */
+    public function iAddMyselfTheEvent()
+    {
+        $this->commandBus->dispatch(
+            AddUserToEvent::withData(
+                $this->userId->toString(),
+                $this->eventId->toString()
+            )
+        );
+    }
+
+    /**
+     * @Then I should be added to the event
+     */
+    public function iShouldBeAddedToTheEventCalled()
+    {
+        foreach ($this->eventStore->getRecordedEvents() as $recordedEvent) {
+            if ($recordedEvent instanceof Event\UserJoinedEvent) {
+                $expectedPayload = [
+                    'event_id' => $this->eventId->toString(),
+                    'joined_at' => (new \DateTimeImmutable('now'))->format(\DATE_ISO8601)
+                ];
+
+                Assert::assertSame($expectedPayload, $recordedEvent->payload());
+
+                return;
+            }
+        }
+
+        Assert::fail(sprintf('No event of type %s found.', Event\UserJoinedEvent::class));
     }
 }

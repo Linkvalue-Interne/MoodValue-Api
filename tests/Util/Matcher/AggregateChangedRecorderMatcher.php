@@ -35,7 +35,7 @@ class AggregateChangedRecorderMatcher extends BasicMatcher
         return new FailureException(sprintf(
             'Expected %s to have recorded event %s, but it hasn\'t.',
             get_class($subject),
-            $arguments[0]
+            get_class($arguments[0])
         ));
     }
 
@@ -44,7 +44,7 @@ class AggregateChangedRecorderMatcher extends BasicMatcher
         return new FailureException(sprintf(
             'Expected %s to not have recorded event %s, but it has.',
             get_class($subject),
-            $arguments[0]
+            get_class($arguments[0])
         ));
     }
 }

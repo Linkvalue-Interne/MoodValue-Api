@@ -2,6 +2,9 @@
 
 namespace MoodValue\Model\User;
 
+use MoodValue\Model\Event\Event;
+use MoodValue\Model\Event\Event\UserJoinedEvent;
+use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\Event\DeviceTokenWasAdded;
 use MoodValue\Model\User\Event\UserWasRegistered;
 use Prooph\EventSourcing\AggregateRoot;
@@ -22,6 +25,11 @@ class User extends AggregateRoot
      * @var DeviceToken[]
      */
     private $deviceTokens;
+
+    /**
+     * @var Event[]
+     */
+    private $events;
 
     /**
      * @var \DateTimeInterface
@@ -71,6 +79,11 @@ class User extends AggregateRoot
         $this->recordThat(DeviceTokenWasAdded::withData($this->userId, $deviceToken));
     }
 
+    public function join(EventId $eventId)
+    {
+        $this->recordThat(UserJoinedEvent::withData($this->userId, $eventId, new \DateTimeImmutable('now')));
+    }
+
     public static function fromHistory(\Iterator $historyEvents) : self
     {
         return self::reconstituteFromHistory($historyEvents);
@@ -91,8 +104,11 @@ class User extends AggregateRoot
 
     protected function whenDeviceTokenWasAdded(DeviceTokenWasAdded $event)
     {
-        $this->userId = $event->userId();
-
         $this->deviceTokens[] = $event->deviceToken();
+    }
+
+    protected function whenUserJoinedEvent(UserJoinedEvent $event)
+    {
+        $this->events[$event->eventId()->toString()] = $event->eventId();
     }
 }

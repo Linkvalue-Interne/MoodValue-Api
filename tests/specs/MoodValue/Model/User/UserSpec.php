@@ -2,6 +2,8 @@
 
 namespace specs\MoodValue\Model\User;
 
+use MoodValue\Model\Event\Event\UserJoinedEvent;
+use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
 use MoodValue\Model\User\Event\DeviceTokenWasAdded;
@@ -9,8 +11,6 @@ use MoodValue\Model\User\Event\UserWasRegistered;
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
 use PhpSpec\ObjectBehavior;
-use Prooph\EventSourcing\AggregateRoot;
-use Prophecy\Argument;
 
 class UserSpec extends ObjectBehavior
 {
@@ -44,5 +44,21 @@ class UserSpec extends ObjectBehavior
         ]);
         $this->addDeviceToken($deviceToken = DeviceToken::fromString(md5('second token')));
         $this->shouldHaveRecorded(DeviceTokenWasAdded::withData($userId, $deviceToken));
+    }
+
+    function it_joins_an_event()
+    {
+        $this->beConstructedThrough('fromHistory', [
+            new \ArrayIterator([
+                UserWasRegistered::withData(
+                    $userId = UserId::generate(),
+                    EmailAddress::fromString('john.doe@example.com'),
+                    DeviceToken::fromString(md5('test')),
+                    new \DateTimeImmutable('5 days ago')
+                )
+            ])
+        ]);
+        $this->join($eventId = EventId::generate());
+        $this->shouldHaveRecorded(UserJoinedEvent::withData($userId, $eventId, new \DateTimeImmutable('now')));
     }
 }
