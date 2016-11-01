@@ -3,7 +3,7 @@
 namespace AppBundle\Command;
 
 use MoodValue\Model\Event\Command\AddEvent;
-use MoodValue\Model\Event\Command\AddUserToEvent;
+use MoodValue\Model\User\Command\JoinEvent;
 use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\Command\AddDeviceTokenToUser;
 use MoodValue\Model\User\Command\RegisterUser;
@@ -69,7 +69,7 @@ class MoodvalueFixturesLoadCommand extends ContainerAwareCommand
                 Uuid::uuid4()->toString()
             ));
 
-            $this->getCommandBus()->dispatch(AddUserToEvent::withData(
+            $this->getCommandBus()->dispatch(JoinEvent::withData(
                 $userId,
                 $this->eventIds[array_rand($this->eventIds)]
             ));

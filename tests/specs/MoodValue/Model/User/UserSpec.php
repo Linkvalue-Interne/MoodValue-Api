@@ -2,7 +2,7 @@
 
 namespace specs\MoodValue\Model\User;
 
-use MoodValue\Model\Event\Event\UserJoinedEvent;
+use MoodValue\Model\User\Event\UserJoinedEvent;
 use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;

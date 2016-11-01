@@ -3,7 +3,7 @@
 namespace MoodValue\Model\User;
 
 use MoodValue\Model\Event\Event;
-use MoodValue\Model\Event\Event\UserJoinedEvent;
+use MoodValue\Model\User\Event\UserJoinedEvent;
 use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\Event\DeviceTokenWasAdded;
 use MoodValue\Model\User\Event\UserWasRegistered;

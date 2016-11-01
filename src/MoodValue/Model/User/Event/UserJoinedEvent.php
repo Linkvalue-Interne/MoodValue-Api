@@ -1,6 +1,6 @@
 <?php
 
-namespace MoodValue\Model\Event\Event;
+namespace MoodValue\Model\User\Event;
 
 use MoodValue\Model\Event\EventId;
 use MoodValue\Model\User\UserId;

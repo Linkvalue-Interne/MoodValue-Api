@@ -2,6 +2,9 @@ default:
     translation:
         locale: en
     suites:
-        domain_features:
-            paths:    [ '%paths.base%/tests/features' ]
-            contexts: [ 'MoodValue\Behat\ApplicationContext' ]
+        domain_user:
+            paths:    [ '%paths.base%/tests/features/suites/User' ]
+            contexts: [ 'MoodValue\Behat\Context\Domain\UserContext' ]
+        domain_event:
+            paths:    [ '%paths.base%/tests/features/suites/Event' ]
+            contexts: [ 'MoodValue\Behat\Context\Domain\EventContext' ]

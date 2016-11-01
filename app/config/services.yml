@@ -11,6 +11,6 @@ services:
         class: MoodValue\Model\Event\Handler\AddEventHandler
         arguments: ['@event_repository']
 
-    moodvalue.add_user_to_event_handler:
-        class: MoodValue\Model\Event\Handler\AddUserToEventHandler
+    moodvalue.join_event_handler:
+        class: MoodValue\Model\User\Handler\JoinEventHandler
         arguments: ['@user_repository']

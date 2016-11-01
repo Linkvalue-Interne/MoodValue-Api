@@ -3,8 +3,10 @@
 namespace MoodValue\Projection\User;
 
 use Doctrine\DBAL\Connection;
+use MoodValue\Model\User\Event\UserJoinedEvent;
 use MoodValue\Model\User\Event\DeviceTokenWasAdded;
 use MoodValue\Model\User\Event\UserWasRegistered;
+use MoodValue\Projection\Event\EventFinder;
 
 class UserProjector
 {
@@ -56,6 +58,18 @@ class UserProjector
             ],
             [
                 'id' => $event->userId()->toString()
+            ]
+        );
+    }
+
+    public function onUserJoinedEvent(UserJoinedEvent $event)
+    {
+        $this->connection->insert(
+            EventFinder::TABLE_USER_HAS_EVENT,
+            [
+                'user_id' => $event->userId()->toString(),
+                'event_id' => $event->eventId()->toString(),
+                'joined_at' => $event->joinedAt()->format('Y-m-d H:i:s')
             ]
         );
     }

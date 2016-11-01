@@ -1,11 +1,11 @@
 <?php
 
-namespace MoodValue\Model\Event\Handler;
+namespace MoodValue\Model\User\Handler;
 
-use MoodValue\Model\Event\Command\AddUserToEvent;
+use MoodValue\Model\User\Command\JoinEvent;
 use MoodValue\Model\User\UserRepository;
 
-final class AddUserToEventHandler
+final class JoinEventHandler
 {
     /**
      * @var UserRepository
@@ -17,7 +17,7 @@ final class AddUserToEventHandler
         $this->userRepository = $userRepository;
     }
 
-    public function __invoke(AddUserToEvent $command)
+    public function __invoke(JoinEvent $command)
     {
         $user = $this->userRepository->get($command->userId());
 

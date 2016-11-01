@@ -4,7 +4,6 @@ namespace MoodValue\Projection\Event;
 
 use Doctrine\DBAL\Connection;
 use MoodValue\Model\Event\Event\EventWasAdded;
-use MoodValue\Model\Event\Event\UserJoinedEvent;
 
 class EventProjector
 {
@@ -36,18 +35,6 @@ class EventProjector
                 'end_date' => $event->endDate()->format('Y-m-d H:i:s'),
                 'day_of_week' => $event->dayOfWeek(),
                 'mobile_splashscreen' => $event->mobileSplashscreen()
-            ]
-        );
-    }
-
-    public function onUserJoinedEvent(UserJoinedEvent $event)
-    {
-        $this->connection->insert(
-            EventFinder::TABLE_USER_HAS_EVENT,
-            [
-                'user_id' => $event->userId()->toString(),
-                'event_id' => $event->eventId()->toString(),
-                'joined_at' => $event->joinedAt()->format('Y-m-d H:i:s')
             ]
         );
     }
