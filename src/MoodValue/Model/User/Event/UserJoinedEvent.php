@@ -45,7 +45,7 @@ final class UserJoinedEvent extends AggregateChanged
     public function eventId() : EventId
     {
         if ($this->eventId === null) {
-            $this->eventId = EventId::fromString($this->aggregateId());
+            $this->eventId = EventId::fromString($this->payload['event_id']);
         }
 
         return $this->eventId;

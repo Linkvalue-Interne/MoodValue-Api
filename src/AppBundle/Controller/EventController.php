@@ -53,7 +53,7 @@ class EventController extends Controller
         $resourceCriteria = new ResourceCriteria($request->query->all());
 
         $eventsCollectionResult = $this->get('moodvalue.moodvalue_projection.event_finder')->findAllForUser(
-            UserId::fromString($userId), $resourceCriteria->getStart(), $resourceCriteria->getLimit()
+            $userId, $resourceCriteria->getStart(), $resourceCriteria->getLimit()
         );
 
         $pageResults = [];

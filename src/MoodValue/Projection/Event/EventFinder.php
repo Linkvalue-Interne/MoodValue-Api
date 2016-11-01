@@ -5,7 +5,7 @@ namespace MoodValue\Projection\Event;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use MoodValue\Infrastructure\Repository\CollectionResult;
-use MoodValue\Model\User\UserId;
+use MoodValue\Projection\User\UserFinder;
 
 class EventFinder
 {
@@ -34,18 +34,19 @@ class EventFinder
         return new CollectionResult($results, $total);
     }
 
-    public function findAllForUser(UserId $userId, int $start = 0, int $limit = 10) : CollectionResult
+    public function findAllForUser(string $userId, int $start = 0, int $limit = 10) : CollectionResult
     {
         $results = $this->connection->fetchAll(
             sprintf('SELECT SQL_CALC_FOUND_ROWS *
-                FROM %s
-                JOIN %s ON %s.event_id = event.id
-                WHERE %s.user_id = :user_id
+                FROM %s mood_event
+                INNER JOIN %s mood_user_has_event ON mood_user_has_event.event_id = mood_event.id
+                INNER JOIN %s mood_user ON mood_user_has_event.user_id = mood_user.id
+                WHERE mood_user.id = :user_id
                 LIMIT %d, %d',
-                self::TABLE_EVENT, self::TABLE_USER_HAS_EVENT, self::TABLE_USER_HAS_EVENT, self::TABLE_USER_HAS_EVENT,
+                self::TABLE_EVENT, self::TABLE_USER_HAS_EVENT, UserFinder::TABLE_USER,
                 $start, $limit),
             [
-                'user_id' => $userId->toString()
+                'user_id' => $userId
             ],
             [
                 'user_id' => Type::STRING

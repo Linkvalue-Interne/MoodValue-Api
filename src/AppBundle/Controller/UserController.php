@@ -4,11 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Pagination\PaginatedRepresentation;
 use AppBundle\Pagination\ResourceCriteria;
-use MoodValue\Model\User\DeviceToken;
-use MoodValue\Model\User\EmailAddress;
-use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -55,6 +51,7 @@ class UserController extends Controller
      */
     public function createUserAction(Request $request)
     {
+        // @todo
 //        $body = json_decode($request->getContent(), true);
 //        $userEmail = EmailAddress::fromString($body['email']);
 //        $userRepository = $this->get('moodvalue.moodvalue_projection.user_finder');

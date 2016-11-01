@@ -41,7 +41,7 @@ class UserProjector
 
     public function onDeviceTokenWasAdded(DeviceTokenWasAdded $event)
     {
-        $user = $this->userFinder->findOneById($event->userId());
+        $user = $this->userFinder->findOneById($event->userId()->toString());
 
         $userDeviceTokens = explode(',', $user['device_tokens']);
 

@@ -4,8 +4,6 @@ namespace MoodValue\Projection\User;
 
 use Doctrine\DBAL\Connection;
 use MoodValue\Infrastructure\Repository\CollectionResult;
-use MoodValue\Model\User\EmailAddress;
-use MoodValue\Model\User\UserId;
 
 class UserFinder
 {
@@ -22,28 +20,28 @@ class UserFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
-    public function findOneById(UserId $userId) : array
+    public function findOneById(string $userId) : array
     {
         $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE id = :user_id', self::TABLE_USER));
-        $stmt->bindValue('user_id', $userId->toString());
+        $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
         return $stmt->fetch();
     }
 
-    public function findOneByEmail(EmailAddress $emailAddress) : array
+    public function findOneByEmail(string $emailAddress) : array
     {
         $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE email = :email', self::TABLE_USER));
-        $stmt->bindValue('email', $emailAddress->toString());
+        $stmt->bindValue('email', $emailAddress);
         $stmt->execute();
 
         return $stmt->fetch();
     }
 
-    public function emailExists(EmailAddress $emailAddress) : bool
+    public function emailExists(string $emailAddress) : bool
     {
         $stmt = $this->connection->prepare(sprintf('SELECT COUNT(*) FROM %s WHERE email = :email', self::TABLE_USER));
-        $stmt->bindValue('email', $emailAddress->toString());
+        $stmt->bindValue('email', $emailAddress);
         $stmt->execute();
 
         return $stmt->fetchColumn() >= 1;
@@ -59,29 +57,4 @@ class UserFinder
 
         return new CollectionResult($results, $total);
     }
-
-//    public function addDeviceToken(UserId $userId, DeviceToken $deviceToken) : int
-//    {
-//        if (!$user = $this->get($userId)) {
-//            return 0;
-//        }
-//
-//        $userDeviceTokens = explode(',', $user['device_tokens']);
-//
-//        if (in_array($deviceToken->toString(), $userDeviceTokens)) {
-//            return 0;
-//        }
-//
-//        $userDeviceTokens[] = $deviceToken->toString();
-//
-//        return $this->connection->update(
-//            self::TABLE_USER,
-//            [
-//                'device_tokens' => implode(',', $userDeviceTokens)
-//            ],
-//            [
-//                'id' => $userId->toString()
-//            ]
-//        );
-//    }
 }
