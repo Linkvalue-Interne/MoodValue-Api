@@ -42,9 +42,6 @@ class ResourceCriteria
      */
     private $sortCriteria;
 
-    /**
-     * @param array $criteria
-     */
     public function __construct(array $criteria)
     {
         $page = isset($criteria[self::PAGE_PARAMETER_NAME]) ? intval($criteria[self::PAGE_PARAMETER_NAME]) : 1;
@@ -67,26 +64,17 @@ class ResourceCriteria
         $this->start = ($this->page - 1) * $this->limit;
     }
 
-    /**
-     * @return array
-     */
-    public function getFieldsCriteria()
+    public function getFieldsCriteria() : array
     {
         return $this->fieldsCriteria;
     }
 
-    /**
-     * @return array
-     */
-    public function getSortCriteria()
+    public function getSortCriteria() : array
     {
         return $this->sortCriteria;
     }
 
-    /**
-     * @return array
-     */
-    public function getSortFieldsWithDirections()
+    public function getSortFieldsWithDirections() : array
     {
         $sortFieldsWithDirections = array();
 
@@ -104,26 +92,17 @@ class ResourceCriteria
         return $sortFieldsWithDirections;
     }
 
-    /**
-     * @return int
-     */
-    public function getLimit()
+    public function getLimit() : int
     {
         return $this->limit;
     }
 
-    /**
-     * @return int
-     */
-    public function getStart()
+    public function getStart() : int
     {
         return $this->start;
     }
 
-    /**
-     * @return int
-     */
-    public function getPage()
+    public function getPage() : int
     {
         return $this->page;
     }
