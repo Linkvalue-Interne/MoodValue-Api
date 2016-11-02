@@ -5,6 +5,10 @@ namespace MoodValue\Model\Event;
 use MoodValue\Model\Event\Event\EventWasAdded;
 use Prooph\EventSourcing\AggregateRoot;
 
+/**
+ * MoodValue Event
+ * Can be a meetup, afterwork or anything else
+ */
 class Event extends AggregateRoot
 {
     /**

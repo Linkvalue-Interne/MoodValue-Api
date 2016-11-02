@@ -1,4 +1,5 @@
 services:
+# Command handlers
     moodvalue.register_user_handler:
         class: MoodValue\Model\User\Handler\RegisterUserHandler
         arguments: ['@user_repository']
@@ -14,3 +15,24 @@ services:
     moodvalue.join_event_handler:
         class: MoodValue\Model\User\Handler\JoinEventHandler
         arguments: ['@user_repository']
+
+# Actions
+    moodvalue.action.index:
+        class: MoodValue\UI\Action\Index
+        arguments: ['@router']
+
+    moodvalue.action.list_users:
+        class: MoodValue\UI\Action\ListUsers
+        arguments: ['@moodvalue.moodvalue_projection.user_finder']
+
+    moodvalue.action.register_user:
+        class: MoodValue\UI\Action\RegisterUser
+        arguments: ['@moodvalue.moodvalue_projection.user_finder', '@prooph_service_bus.moodvalue_command_bus']
+
+    moodvalue.action.list_events:
+        class: MoodValue\UI\Action\ListEvents
+        arguments: ['@moodvalue.moodvalue_projection.event_finder']
+
+    moodvalue.action.list_events_for_user:
+        class: MoodValue\UI\Action\ListEventsForUser
+        arguments: ['@moodvalue.moodvalue_projection.event_finder']

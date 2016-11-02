@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Pagination;
+namespace MoodValue\UI\Pagination;
 
 /**
  * Allows to separate and filter url parameters for resource filtering

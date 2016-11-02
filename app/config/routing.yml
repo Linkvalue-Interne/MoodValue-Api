@@ -1,3 +1,24 @@
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
+moodvalue_index:
+    path:      /
+    defaults:  { _controller: 'moodvalue.action.index' }
+    methods: ['GET']
+
+moodvalue_list_users:
+    path:      /users
+    defaults:  { _controller: 'moodvalue.action.list_users' }
+    methods: ['GET']
+
+moodvalue_register_user:
+    path:      /users
+    defaults:  { _controller: 'moodvalue.action.register_user' }
+    methods: ['POST']
+
+moodvalue_list_events:
+    path:      /events
+    defaults:  { _controller: 'moodvalue.action.list_events' }
+    methods: ['GET']
+
+moodvalue_list_events_for_user:
+    path:      /users/{user}/events
+    defaults:  { _controller: 'moodvalue.action.list_events_for_user' }
+    methods: ['GET']

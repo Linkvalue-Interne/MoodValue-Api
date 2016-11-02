@@ -22,7 +22,7 @@ class UserFinder
 
     public function findOneById(string $userId) : array
     {
-        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE id = :user_id', self::TABLE_USER));
+        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE id = :user_id LIMIT 1', self::TABLE_USER));
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
 
@@ -31,7 +31,7 @@ class UserFinder
 
     public function findOneByEmail(string $emailAddress) : array
     {
-        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE email = :email', self::TABLE_USER));
+        $stmt = $this->connection->prepare(sprintf('SELECT * FROM %s WHERE email = :email LIMIT 1', self::TABLE_USER));
         $stmt->bindValue('email', $emailAddress);
         $stmt->execute();
 

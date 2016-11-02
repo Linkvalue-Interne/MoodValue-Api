@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Pagination;
+namespace MoodValue\UI\Pagination;
 
 class PaginatedRepresentation
 {
