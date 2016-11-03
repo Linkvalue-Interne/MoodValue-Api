@@ -7,8 +7,9 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use MoodValue\Behat\Context\Domain\Behaviour\Prooph;
-use MoodValue\Model\Event\Command\AddEvent;
-use MoodValue\Model\Event\Event\EventWasAdded;
+use MoodValue\Model\Event\{
+    Command\AddEvent, Event\EventWasAdded
+};
 use PHPUnit_Framework_Assert as Assert;
 
 class EventContext implements Context

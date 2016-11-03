@@ -7,14 +7,17 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use MoodValue\Behat\Context\Domain\Behaviour\Prooph;
-use MoodValue\Model\User\Command\JoinEvent;
-use MoodValue\Model\Event\Event\EventWasAdded;
-use MoodValue\Model\Event\EventId;
-use MoodValue\Model\User\Command\RegisterUser;
+use MoodValue\Model\Event\{
+    Event, Event\EventWasAdded, EventId
+};
+use MoodValue\Model\User\Command\{
+    AddDeviceTokenToUser, JoinEvent, RegisterUser
+};
 use MoodValue\Model\User\DeviceToken;
 use MoodValue\Model\User\EmailAddress;
-use MoodValue\Model\User\Event\UserJoinedEvent;
-use MoodValue\Model\User\Event\UserWasRegistered;
+use MoodValue\Model\User\Event\{
+    DeviceTokenWasAdded, UserJoinedEvent, UserWasRegistered
+};
 use MoodValue\Model\User\User;
 use MoodValue\Model\User\UserId;
 use PHPUnit_Framework_Assert as Assert;
@@ -54,10 +57,6 @@ class UserContext implements Context
     }
 
     /**
-     * ===== ADD USER
-     */
-
-    /**
      * @Given I'm not registered yet
      */
     public function iMNotRegisteredYet()
@@ -83,6 +82,65 @@ class UserContext implements Context
         } catch (\Exception $e) {
             $this->thrownException = $e;
         }
+    }
+
+    /**
+     * @Given I'm registered
+     */
+    public function iMRegistered()
+    {
+        $this->userId = UserId::fromString('4bd5dfb0-2527-41db-b8a4-58400ee97857');
+        $this->userDeviceToken = '654C4DB3-3F68-4969-8ED2-80EA16B46EB0';
+
+        $this->eventStore->appendTo($this->streamName, new \ArrayIterator([
+            $userWasRegistered = UserWasRegistered::withData(
+                $this->userId,
+                EmailAddress::fromString('john.doe@example.com'),
+                DeviceToken::fromString($this->userDeviceToken),
+                new \DateTimeImmutable('now')
+            )->withAddedMetadata('aggregate_type', User::class)
+        ]));
+    }
+
+    /**
+     * @Given there is an event
+     */
+    public function thereIsAnEvent()
+    {
+        $this->eventStore->appendTo($this->streamName, new \ArrayIterator([
+            EventWasAdded::withData(
+                $this->eventId = EventId::generate(),
+                'Halloween',
+                'text',
+                new \DateTimeImmutable('now'),
+                new \DateTimeImmutable('+10 days'),
+                2,
+                true
+            )->withAddedMetadata('aggregate_type', Event::class)
+        ]));
+    }
+
+    /**
+     * @When I join the event
+     */
+    public function iJoinTheEvent()
+    {
+        $this->commandBus->dispatch(
+            JoinEvent::withData($this->userId->toString(), $this->eventId->toString())
+        );
+    }
+
+    /**
+     * @When I add a new device token :deviceToken
+     */
+    public function iAddANewDeviceToken($deviceToken)
+    {
+        $this->commandBus->dispatch(
+            AddDeviceTokenToUser::withData(
+                $this->userId->toString(),
+                $deviceToken
+            )
+        );
     }
 
     /**
@@ -113,53 +171,6 @@ class UserContext implements Context
     }
 
     /**
-     * ===== JOIN EVENT
-     */
-
-    /**
-     * @Given I'm registered
-     */
-    public function iMRegistered()
-    {
-        $this->eventStore->appendTo($this->streamName, new \ArrayIterator([
-            $userWasRegistered = UserWasRegistered::withData(
-                $this->userId = UserId::fromString('4bd5dfb0-2527-41db-b8a4-58400ee97857'),
-                EmailAddress::fromString('john.doe@example.com'),
-                DeviceToken::fromString(md5('test')),
-                new \DateTimeImmutable('now')
-            )->withAddedMetadata('aggregate_type', User::class)
-        ]));
-    }
-
-    /**
-     * @Given there is an event
-     */
-    public function thereIsAnEventCalled()
-    {
-        $this->eventStore->appendTo($this->streamName, new \ArrayIterator([
-            EventWasAdded::withData(
-                $this->eventId = EventId::generate(),
-                'Halloween',
-                'text',
-                new \DateTimeImmutable('now'),
-                new \DateTimeImmutable('+10 days'),
-                2,
-                true
-            )->withAddedMetadata('aggregate_type', Event::class)
-        ]));
-    }
-
-    /**
-     * @When I join the event
-     */
-    public function iJoinTheEvent()
-    {
-        $this->commandBus->dispatch(
-            JoinEvent::withData($this->userId->toString(), $this->eventId->toString())
-        );
-    }
-
-    /**
      * @Then I should be added to the event
      */
     public function iShouldBeAddedToTheEvent()
@@ -177,6 +188,27 @@ class UserContext implements Context
             }
         }
 
-        Assert::fail(sprintf('No event of type %s found.', Event\UserJoinedEvent::class));
+        Assert::fail(sprintf('No event of type %s found.', UserJoinedEvent::class));
     }
+
+    /**
+     * @Then I should have my new device token registered
+     */
+    public function iShouldHaveMyNewDeviceTokenRegistered()
+    {
+        foreach ($this->eventStore->getRecordedEvents() as $recordedEvent) {
+            if ($recordedEvent instanceof DeviceTokenWasAdded) {
+                $expectedPayload = [
+                    'device_token' => $this->userDeviceToken
+                ];
+
+                Assert::assertSame($expectedPayload, $recordedEvent->payload());
+
+                return;
+            }
+        }
+
+        Assert::fail(sprintf('No event of type %s found.', UserJoinedEvent::class));
+    }
+
 }

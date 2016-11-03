@@ -18,5 +18,6 @@ final class AddDeviceTokenToUserHandler
     {
         $user = $this->userRepository->get($command->userId());
         $user->addDeviceToken($command->deviceToken());
+        $this->userRepository->add($user);
     }
 }
