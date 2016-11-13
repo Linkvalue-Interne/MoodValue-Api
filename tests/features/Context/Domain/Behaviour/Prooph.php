@@ -20,6 +20,7 @@ use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventStore\{
     Adapter\InMemoryAdapter, Aggregate\AggregateType, EventStore, Stream\Stream, Stream\StreamName
 };
+use Prooph\EventStoreBusBridge\TransactionManager;
 use Prooph\ServiceBus\CommandBus;
 use Prooph\ServiceBus\Plugin\Router\CommandRouter;
 
@@ -48,7 +49,10 @@ trait Prooph
         $eventStoreAdapter = new InMemoryAdapter();
         $eventStoreAdapter->create($stream);
 
+        $transactionManager = new TransactionManager();
+
         $this->eventStore = new EventStore($eventStoreAdapter, new ProophActionEventEmitter());
+        $transactionManager->setUp($this->eventStore);
         $this->eventStore->beginTransaction();
 
         $userRepository = new EventStoreUserRepository(
@@ -72,6 +76,7 @@ trait Prooph
             ->route(JoinEvent::class)->to(new JoinEventHandler($userRepository))
             ->route(AddDeviceTokenToUser::class)->to(new AddDeviceTokenToUserHandler($userRepository));
         $this->commandBus = new CommandBus();
+//        $this->commandBus->utilize($transactionManager);
         $this->commandBus->utilize($commandRouter);
     }
 }
