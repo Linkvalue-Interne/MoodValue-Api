@@ -168,7 +168,7 @@ class UserContext implements Context
      */
     public function iShouldNotBeRegistered(string $message)
     {
-        Assert::assertEquals($message, $this->thrownException->getPrevious()->getMessage());
+        Assert::assertNotNull($this->thrownException);
     }
 
     /**
