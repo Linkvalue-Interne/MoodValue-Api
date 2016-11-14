@@ -15,6 +15,7 @@ use MoodValue\Model\User\User;
 use MoodValue\Model\Event\{
     Command\AddEvent, Event, Handler\AddEventHandler
 };
+use Prooph\Common\Event\ActionEvent;
 use Prooph\Common\Event\ProophActionEventEmitter;
 use Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator;
 use Prooph\EventStore\{
@@ -41,6 +42,11 @@ trait Prooph
      */
     private $commandBus;
 
+    /**
+     * @var \ArrayIterator
+     */
+    private $recordedEvents;
+
     public function initProoph()
     {
         $this->streamName = new StreamName('moodvalue_test_event_stream');
@@ -52,8 +58,11 @@ trait Prooph
         $transactionManager = new TransactionManager();
 
         $this->eventStore = new EventStore($eventStoreAdapter, new ProophActionEventEmitter());
+        $this->eventStore->getActionEventEmitter()->attachListener('appendTo.post', function (ActionEvent $event) {
+            $this->recordedEvents = $event->getParam('streamEvents');
+        }, -1000);
+
         $transactionManager->setUp($this->eventStore);
-        $this->eventStore->beginTransaction();
 
         $userRepository = new EventStoreUserRepository(
             $this->eventStore,
@@ -76,7 +85,7 @@ trait Prooph
             ->route(JoinEvent::class)->to(new JoinEventHandler($userRepository))
             ->route(AddDeviceTokenToUser::class)->to(new AddDeviceTokenToUserHandler($userRepository));
         $this->commandBus = new CommandBus();
-//        $this->commandBus->utilize($transactionManager);
+        $this->commandBus->utilize($transactionManager);
         $this->commandBus->utilize($commandRouter);
     }
 }

@@ -22,7 +22,5 @@ final class JoinEventHandler
         $user = $this->userRepository->get($command->userId());
 
         $user->join($command->eventId());
-
-        $this->userRepository->add($user); // @todo rm ?
     }
 }

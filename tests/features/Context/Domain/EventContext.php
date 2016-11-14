@@ -60,7 +60,7 @@ class EventContext implements Context
      */
     public function aNewEventShouldBeAdded()
     {
-        $events = iterator_to_array($this->eventStore->getRecordedEvents());
+        $events = iterator_to_array($this->recordedEvents);
 
         Assert::assertCount(1, $events);
         Assert::assertInstanceOf(EventWasAdded::class, $events[0]);

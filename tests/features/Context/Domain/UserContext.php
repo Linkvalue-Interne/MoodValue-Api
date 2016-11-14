@@ -92,6 +92,7 @@ class UserContext implements Context
         $this->userId = UserId::fromString('4bd5dfb0-2527-41db-b8a4-58400ee97857');
         $this->userDeviceToken = '654C4DB3-3F68-4969-8ED2-80EA16B46EB0';
 
+        $this->eventStore->beginTransaction();
         $this->eventStore->appendTo($this->streamName, new \ArrayIterator([
             $userWasRegistered = UserWasRegistered::withData(
                 $this->userId,
@@ -148,7 +149,7 @@ class UserContext implements Context
      */
     public function iShouldBeRegistered()
     {
-        $events = iterator_to_array($this->eventStore->getRecordedEvents());
+        $events = iterator_to_array($this->recordedEvents);
 
         Assert::assertCount(1, $events);
         Assert::assertInstanceOf(UserWasRegistered::class, $events[0]);
@@ -175,7 +176,7 @@ class UserContext implements Context
      */
     public function iShouldBeAddedToTheEvent()
     {
-        foreach ($this->eventStore->getRecordedEvents() as $recordedEvent) {
+        foreach ($this->recordedEvents as $recordedEvent) {
             if ($recordedEvent instanceof UserJoinedEvent) {
                 $expectedPayload = [
                     'event_id' => $this->eventId->toString(),
@@ -196,7 +197,7 @@ class UserContext implements Context
      */
     public function iShouldHaveMyNewDeviceTokenRegistered()
     {
-        foreach ($this->eventStore->getRecordedEvents() as $recordedEvent) {
+        foreach ($this->recordedEvents as $recordedEvent) {
             if ($recordedEvent instanceof DeviceTokenWasAdded) {
                 $expectedPayload = [
                     'device_token' => $this->userDeviceToken
